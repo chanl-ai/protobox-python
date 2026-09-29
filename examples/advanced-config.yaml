@@ -1,0 +1,96 @@
+server:
+  name: "advanced-mcp-server"
+  version: "1.0.0"
+  description: "Advanced MCP server with multiple API integrations"
+
+transport:
+  type: "http"
+  host: "0.0.0.0"
+  port: 8080
+  path: "/mcp"
+
+tools:
+  # Basic echo tool for testing
+  - name: "echo"
+    type: "builtin.echo"
+    enabled: true
+
+  # Weather API integration
+  - name: "weather"
+    type: "builtin.rest_api"
+    enabled: true
+    config:
+      description: "Get weather information"
+      url: "https://api.openweathermap.org/data/2.5/{endpoint}"
+      method: "GET"
+      headers:
+        "User-Agent": "MCP-Server/1.0"
+      timeout: 30
+      retries: 3
+      input_schema:
+        type: "object"
+        properties:
+          endpoint:
+            type: "string"
+            description: "API endpoint (weather, forecast, etc.)"
+          q:
+            type: "string"
+            description: "City name"
+          appid:
+            type: "string"
+            description: "API key"
+        required: ["endpoint", "q", "appid"]
+
+  # JSONPlaceholder API for testing
+  - name: "jsonplaceholder"
+    type: "builtin.rest_api"
+    enabled: true
+    config:
+      description: "JSONPlaceholder API for testing"
+      url: "https://jsonplaceholder.typicode.com/{endpoint}"
+      method: "GET"
+      timeout: 15
+      retries: 2
+      input_schema:
+        type: "object"
+        properties:
+          endpoint:
+            type: "string"
+            description: "API endpoint (posts, users, comments, etc.)"
+          id:
+            type: "string"
+            description: "Optional resource ID"
+        required: ["endpoint"]
+
+  # HTTPBin for testing various HTTP methods
+  - name: "httpbin"
+    type: "builtin.rest_api"
+    enabled: true
+    config:
+      description: "HTTPBin testing service"
+      url: "https://httpbin.org/{endpoint}"
+      method: "GET"
+      timeout: 20
+      retries: 2
+      input_schema:
+        type: "object"
+        properties:
+          endpoint:
+            type: "string"
+            description: "HTTPBin endpoint (ip, headers, user-agent, etc.)"
+        required: ["endpoint"]
+
+logging:
+  level: "DEBUG"
+  format: "structured"
+  # Uncomment to log to file
+  # file: "/var/log/mcp-server.log"
+
+context:
+  storage: "memory"
+  ttl: 7200  # 2 hours
+
+# Environment variable examples:
+# OPENWEATHER_API_KEY=your_api_key_here
+# MCP_LOG_LEVEL=INFO
+# MCP_TRANSPORT_PORT=9000 

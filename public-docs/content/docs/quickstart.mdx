@@ -1,0 +1,162 @@
+---
+title: Quick Start Guide
+description: Get up and running with Mocopo in minutes
+---
+
+# Quick Start Guide
+
+Get your Mocopo server up and running in just a few minutes.
+
+## Prerequisites
+
+- Python 3.8+ 
+- MongoDB (for Admin API)
+- Docker (for code execution)
+
+## Installation
+
+### Option 1: Development Installation
+```bash
+# Clone the repository
+git clone https://github.com/your-org/mocopo.git
+cd mocopo
+
+# Install in development mode
+pip install -e .
+```
+
+### Option 2: Package Installation
+```bash
+# Install from PyPI (when available)
+pip install mocopo
+```
+
+## Basic Server
+
+### Start with stdio transport
+```bash
+mcp-server stdio
+```
+
+### Start with HTTP transport
+```bash
+mcp-server http --host 0.0.0.0 --port 8080
+```
+
+### Test the server
+```bash
+# List available tools
+curl -X POST http://localhost:8080/mcp \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "tools/list"
+  }'
+```
+
+## Admin API Setup
+
+### 1. Start MongoDB
+```bash
+docker run -d -p 27017:27017 --name mongo mongo:latest
+```
+
+### 2. Set environment variables
+```bash
+export MCP_ADMIN_ENABLED=true
+export MCP_MONGODB_URL=mongodb://localhost:27017/mcp_admin
+export MCP_SECRET_KEY=your-secret-master-key
+```
+
+### 3. Start server with admin API
+```bash
+mcp-server --config examples/advanced-config.yaml http
+```
+
+### 4. Test admin API
+```bash
+# Create your first action
+curl -X POST http://localhost:8080/admin/api/v1/actions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "test_api",
+    "type": "REST",
+    "description": "Test API call",
+    "default_config": {
+      "url": "https://httpbin.org/get",
+      "method": "GET"
+    }
+  }'
+```
+
+## Configuration File
+
+Create a `config.yaml` file:
+
+```yaml
+server:
+  name: "mocopo-server"
+  version: "1.0.0"
+
+transport:
+  type: "http"
+  host: "0.0.0.0"
+  port: 8080
+
+admin:
+  enabled: true
+  mongodb_url: "mongodb://localhost:27017/mcp_admin"
+  secret_key: "${MCP_SECRET_KEY}"
+
+tools:
+  - name: "echo"
+    type: "builtin.echo"
+    enabled: true
+
+logging:
+  level: "INFO"
+  format: "structured"
+```
+
+## FastAPI Integration
+
+```python
+from fastapi import FastAPI
+from mcp.admin.router import admin_router
+from mcp.admin.database.connection import DatabaseManager
+from mcp.admin.secrets.encryption import SecretManager
+
+app = FastAPI(title="My App with Mocopo")
+
+# Initialize services
+db_manager = DatabaseManager("mongodb://localhost:27017/mcp_admin")
+secret_manager = SecretManager("your-secret-master-key")
+
+# Include admin API
+app.include_router(admin_router, prefix="/admin/api/v1")
+
+# Your existing routes
+@app.get("/")
+async def root():
+    return {"message": "My App with Mocopo Admin API"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8080)
+```
+
+## Next Steps
+
+Now that you have Mocopo running:
+
+1. **[Explore the API](/docs/api-reference)** - Learn about all 28 admin endpoints
+2. **[Try the SDK](/docs/sdk)** - Use the Python client library
+3. **[Read the guides](/docs/guides)** - Integration patterns and best practices
+4. **[Check examples](https://github.com/your-org/mocopo/tree/main/examples)** - Complete working examples
+
+## Need Help?
+
+- **Documentation**: You're reading it! 📚
+- **GitHub Issues**: [Report bugs or request features](https://github.com/your-org/mocopo/issues)
+- **Examples**: [Complete examples](https://github.com/your-org/mocopo/tree/main/examples)

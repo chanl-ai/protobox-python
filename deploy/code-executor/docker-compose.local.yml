@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  code-executor:
+    build:
+      context: ../../
+      dockerfile: docker/code-executor/Dockerfile
+    container_name: mcp-code-executor
+    
+    # Security Configuration
+    user: "1001:1001"  # Non-root user
+    read_only: true    # Read-only filesystem
+    
+    # Security options
+    security_opt:
+      - no-new-privileges:true  # Prevent privilege escalation
+      - apparmor:docker-default # AppArmor profile
+      - seccomp:./seccomp-profile.json  # Custom seccomp profile
+    
+    # Capability restrictions
+    cap_drop:
+      - ALL  # Drop all capabilities
+    cap_add:
+      - SETUID  # Only add necessary capabilities
+      - SETGID
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'        # Limit to 1 CPU
+          memory: 512M       # Limit memory to 512MB
+          pids: 100          # Limit number of processes
+        reservations:
+          memory: 128M
+    
+    # Temporary filesystems for write operations
+    tmpfs:
+      - /tmp:size=100M,noexec,nosuid,nodev
+      - /var/tmp:size=50M,noexec,nosuid,nodev
+    
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - EXECUTION_TIMEOUT=30
+      - MEMORY_LIMIT_MB=256
+      - MAX_PROCESSES=50
+    
+    # Network isolation
+    networks:
+      - isolated
+    
+    # Port mapping (only expose what's needed)
+    ports:
+      - "8080:8080"
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Isolated network for security
+networks:
+  isolated:
+    driver: bridge
+    internal: true  # No external network access
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "false"  # Disable inter-container communication 

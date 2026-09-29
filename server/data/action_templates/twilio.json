@@ -1,0 +1,383 @@
+{
+  "version": "1.0.0",
+  "category": "twilio",
+  "templates": [
+    {
+      "id": "twilio_send_sms",
+      "name": "Send SMS Message",
+      "description": "Send a text message via Twilio SMS",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "twilio",
+          "required": true,
+          "features": [
+            "sms.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to",
+            "type": "string",
+            "description": "Recipient phone number (E.164 format, e.g., +1234567890)",
+            "required": true
+          },
+          {
+            "name": "from",
+            "type": "string",
+            "description": "Sender phone number (Twilio number)",
+            "required": true
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "description": "SMS message content",
+            "required": true
+          },
+          {
+            "name": "media_url",
+            "type": "string",
+            "description": "URL of media to send (optional)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/${secret:twilio_account_sid}/Messages.json",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Basic ${secret:twilio_auth_token}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "To": "{{to}}",
+          "From": "{{from}}",
+          "Body": "{{body}}",
+          "MediaUrl": "{{media_url}}"
+        },
+        "integration_metadata": {
+          "type": "twilio",
+          "operation": "send_sms"
+        }
+      },
+      "tags": [
+        "sms",
+        "text",
+        "communication",
+        "mobile"
+      ],
+      "examples": [
+        {
+          "name": "Send appointment reminder",
+          "config": {
+            "to": "+1234567890",
+            "from": "+1987654321",
+            "body": "Your appointment is tomorrow at 2 PM. Reply YES to confirm."
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "twilio_make_voice_call",
+      "name": "Make Voice Call",
+      "description": "Initiate a voice call with TwiML instructions",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "twilio",
+          "required": true,
+          "features": [
+            "voice.call"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to",
+            "type": "string",
+            "description": "Recipient phone number (E.164 format)",
+            "required": true
+          },
+          {
+            "name": "from",
+            "type": "string",
+            "description": "Sender phone number (Twilio number)",
+            "required": true
+          },
+          {
+            "name": "twiml_url",
+            "type": "string",
+            "description": "URL containing TwiML instructions",
+            "required": true
+          },
+          {
+            "name": "status_callback",
+            "type": "string",
+            "description": "Webhook URL for call status updates"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/${secret:twilio_account_sid}/Calls.json",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Basic ${secret:twilio_auth_token}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "To": "{{to}}",
+          "From": "{{from}}",
+          "Url": "{{twiml_url}}",
+          "StatusCallback": "{{status_callback}}"
+        },
+        "integration_metadata": {
+          "type": "twilio",
+          "operation": "make_voice_call"
+        }
+      },
+      "tags": [
+        "voice",
+        "call",
+        "communication",
+        "phone"
+      ],
+      "examples": [
+        {
+          "name": "Make reminder call",
+          "config": {
+            "to": "+1234567890",
+            "from": "+1987654321",
+            "twiml_url": "https://example.com/twiml/reminder.xml"
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "twilio_send_whatsapp",
+      "name": "Send WhatsApp Message",
+      "description": "Send a message via Twilio WhatsApp",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "twilio",
+          "required": true,
+          "features": [
+            "whatsapp.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to",
+            "type": "string",
+            "description": "Recipient WhatsApp number (with country code)",
+            "required": true
+          },
+          {
+            "name": "from",
+            "type": "string",
+            "description": "Sender WhatsApp number (Twilio WhatsApp number)",
+            "required": true
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "description": "WhatsApp message content",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/${secret:twilio_account_sid}/Messages.json",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Basic ${secret:twilio_auth_token}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "To": "whatsapp:{{to}}",
+          "From": "whatsapp:{{from}}",
+          "Body": "{{body}}"
+        },
+        "integration_metadata": {
+          "type": "twilio",
+          "operation": "send_whatsapp"
+        }
+      },
+      "tags": [
+        "whatsapp",
+        "messaging",
+        "communication",
+        "social"
+      ],
+      "examples": [
+        {
+          "name": "Send order confirmation",
+          "config": {
+            "to": "+1234567890",
+            "from": "+1987654321",
+            "body": "Your order #12345 has been confirmed and will ship tomorrow!"
+          }
+        }
+      ],
+      "popularity_score": 92
+    },
+    {
+      "id": "twilio_get_call_logs",
+      "name": "Get Call Logs",
+      "description": "Retrieve call history and logs from Twilio",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "twilio",
+          "required": true,
+          "features": [
+            "voice.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "start_date",
+            "type": "string",
+            "description": "Start date for call logs (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "end_date",
+            "type": "string",
+            "description": "End date for call logs (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Filter by call status (completed, failed, busy, etc.)"
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "description": "Maximum number of records to return",
+            "default": 20
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/${secret:twilio_account_sid}/Calls.json?StartTime={{start_date}}&EndTime={{end_date}}&Status={{status}}&PageSize={{limit}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Basic ${secret:twilio_auth_token}"
+        },
+        "integration_metadata": {
+          "type": "twilio",
+          "operation": "get_call_logs"
+        }
+      },
+      "tags": [
+        "analytics",
+        "logs",
+        "calls",
+        "reporting"
+      ],
+      "examples": [
+        {
+          "name": "Get today's calls",
+          "config": {
+            "start_date": "2024-03-15",
+            "end_date": "2024-03-15",
+            "status": "completed",
+            "limit": 50
+          }
+        }
+      ],
+      "popularity_score": 75
+    },
+    {
+      "id": "twilio_get_sms_logs",
+      "name": "Get SMS Logs",
+      "description": "Retrieve SMS message history and logs from Twilio",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "twilio",
+          "required": true,
+          "features": [
+            "sms.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "start_date",
+            "type": "string",
+            "description": "Start date for SMS logs (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "end_date",
+            "type": "string",
+            "description": "End date for SMS logs (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "description": "Filter by SMS status (delivered, failed, etc.)"
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "description": "Maximum number of records to return",
+            "default": 20
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.twilio.com/2010-04-01/Accounts/${secret:twilio_account_sid}/Messages.json?DateSent={{start_date}}&DateSent={{end_date}}&Status={{status}}&PageSize={{limit}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Basic ${secret:twilio_auth_token}"
+        },
+        "integration_metadata": {
+          "type": "twilio",
+          "operation": "get_sms_logs"
+        }
+      },
+      "tags": [
+        "analytics",
+        "logs",
+        "sms",
+        "reporting"
+      ],
+      "examples": [
+        {
+          "name": "Get this week's SMS",
+          "config": {
+            "start_date": "2024-03-11",
+            "end_date": "2024-03-15",
+            "status": "delivered",
+            "limit": 100
+          }
+        }
+      ],
+      "popularity_score": 78
+    }
+  ]
+}

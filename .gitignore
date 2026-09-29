@@ -1,0 +1,303 @@
+# ===========================
+# Project-Specific Ignores
+# ===========================
+
+# Claude/Serena/Agent files
+.serena/
+.claude/
+todos
+CLAUDE.local.md
+
+# Test and Cache files
+.chat*
+.test-token
+.test-token-*
+.test-cache.json
+.test-cache-*.json
+.test-workspace-id
+.firebase-custom-token
+.firebase-id-token
+.firebase-id-token-*
+.firebase-production-id-token
+.firebase-**
+.staging-access-token
+.emulator-tokens.json
+*.token
+*.ruff_cache
+**/.ruff_cache
+.serena/*
+.vercel/*
+
+
+# Process ID files
+*.pid
+.mcp-server.pid
+.firebase-emulator.pid
+.frontend.pid
+startup-check.pid
+
+# Ignore root-level files but preserve in subdirectories
+/*.md
+!docs/**/*.md
+/*.py
+!server/**/*.py
+!scripts/**/*.py
+/*.sh
+!scripts/**/*.sh
+/*.json
+!server/**/*.json
+!client/**/*.json
+!package.json
+!tsconfig.json
+
+# Deployment tracking
+.deployment-version
+
+# ===========================
+# Python
+# ===========================
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+# lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+.pdm.toml
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.env.local
+.env.development
+.env.test
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# MCP Server specific
+config.yaml
+config.json
+logs/
+*.log
+
+# Firebase emulator data (contains test users and auth state)
+firebase-emulator-data/
+
+# Experiments folder
+experiments/
+
+# Separate SDK project
+mocops-sdk/
+node_modules
+
+# Next.js
+.next/
+next-env.d.ts
+
+# Client specific
+client/.next/
+client/next-env.d.ts
+client/package-lock.json
+.vercel
+
+# TypeScript build cache
+client/tsconfig.tsbuildinfo
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+
+# Environment files that should not be committed
+.env.production.local
+.env.staging.local
+.env.vercel.production
+.env.vercel.staging
+client/.env.production.local
+client/.env.staging.local
+client/.env.vercel.local
+server/.env.local
+client/.env.local
+
+# Temporary directories
+/tmp/
+tmp/
+temp/
+.tmp/
+
+# Build outputs
+out/
+.out/
+
+# Coverage reports
+coverage/
+.coverage
+*.lcov
+
+# Test results
+test-results/
+playwright-report/
+playwright/.cache/
+
+# IDE specific files
+*.swp
+*.swo
+*~
+.cursorrules.md
+
+# Approval files
+.pnpm-approvals.json
+
+# Lock files (if using multiple package managers)
+# Uncomment if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+client/tsconfig.tsbuildinfo
+.claude/settings.local.json
+
+# Local credentials and state; never commit
+.test-cache*.json
+.test-token*
+.firebase-*token*
+.staging-access-token
+*.pid
+.chat-test-state*
+firebase-emulator-data/
+
+# Emulator config is needed by docker-compose
+!/firebase.json

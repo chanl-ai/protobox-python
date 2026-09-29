@@ -1,0 +1,1421 @@
+{
+  "version": "1.0.0",
+  "category": "hubspot",
+  "templates": [
+    {
+      "id": "hubspot_create_contact",
+      "name": "Create HubSpot Contact",
+      "description": "Create a new contact in HubSpot CRM with basic information and custom properties",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "contacts.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "email",
+            "type": "string",
+            "description": "Contact email address",
+            "required": true
+          },
+          {
+            "name": "firstname",
+            "type": "string",
+            "description": "Contact first name"
+          },
+          {
+            "name": "lastname",
+            "type": "string",
+            "description": "Contact last name"
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "description": "Contact phone number"
+          },
+          {
+            "name": "company",
+            "type": "string",
+            "description": "Company name"
+          },
+          {
+            "name": "jobtitle",
+            "type": "string",
+            "description": "Job title"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "email": "{{email}}",
+            "firstname": "{{firstname}}",
+            "lastname": "{{lastname}}",
+            "phone": "{{phone}}",
+            "company": "{{company}}",
+            "jobtitle": "{{jobtitle}}"
+          }
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "create_contact"
+        }
+      },
+      "tags": [
+        "crm",
+        "contacts",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "New Lead Contact",
+          "config": {
+            "email": "john.doe@example.com",
+            "firstname": "John",
+            "lastname": "Doe",
+            "company": "Acme Corp",
+            "jobtitle": "Sales Manager"
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "hubspot_update_contact",
+      "name": "Update HubSpot Contact",
+      "description": "Update an existing contact in HubSpot CRM with new information",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "contacts.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "contact_id",
+            "type": "string",
+            "description": "HubSpot contact ID",
+            "required": true
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "description": "Contact email address"
+          },
+          {
+            "name": "firstname",
+            "type": "string",
+            "description": "Contact first name"
+          },
+          {
+            "name": "lastname",
+            "type": "string",
+            "description": "Contact last name"
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "description": "Contact phone number"
+          },
+          {
+            "name": "company",
+            "type": "string",
+            "description": "Company name"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts/{{contact_id}}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "email": "{{email}}",
+            "firstname": "{{firstname}}",
+            "lastname": "{{lastname}}",
+            "phone": "{{phone}}",
+            "company": "{{company}}"
+          }
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "update_contact"
+        }
+      },
+      "tags": [
+        "crm",
+        "contacts",
+        "hubspot",
+        "update"
+      ],
+      "examples": [
+        {
+          "name": "Update Contact Info",
+          "config": {
+            "contact_id": "12345",
+            "phone": "+1-555-0123",
+            "company": "Updated Company Name"
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "hubspot_search_contacts",
+      "name": "Search HubSpot Contacts",
+      "description": "Search for contacts in HubSpot CRM using various criteria",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "contacts.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "properties",
+            "type": "string",
+            "description": "Comma-separated list of properties to return (default email,firstname,lastname,company,phone)",
+            "default": "email,firstname,lastname,company,phone"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/contacts?properties={{properties}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "search_contacts"
+        }
+      },
+      "tags": [
+        "crm",
+        "contacts",
+        "hubspot",
+        "search"
+      ],
+      "examples": [
+        {
+          "name": "Find Contact by Email",
+          "config": {
+            "query": "john.doe@example.com",
+            "limit": 5
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "hubspot_create_deal",
+      "name": "Create HubSpot Deal",
+      "description": "Create a new deal in HubSpot CRM with amount, stage, and associated contact",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "deals.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "dealname",
+            "type": "string",
+            "description": "Name of the deal",
+            "required": true
+          },
+          {
+            "name": "amount",
+            "type": "string",
+            "description": "Deal amount (e.g., '10000.00')",
+            "required": true
+          },
+          {
+            "name": "dealstage",
+            "type": "string",
+            "description": "Deal stage (e.g., 'appointmentscheduled', 'qualifiedtobuy', 'presentationscheduled')",
+            "required": true
+          },
+          {
+            "name": "contact_id",
+            "type": "string",
+            "description": "Associated contact ID"
+          },
+          {
+            "name": "company_id",
+            "type": "string",
+            "description": "Associated company ID"
+          },
+          {
+            "name": "closedate",
+            "type": "string",
+            "description": "Expected close date (YYYY-MM-DD)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/deals",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "dealname": "{{dealname}}",
+            "amount": "{{amount}}",
+            "dealstage": "{{dealstage}}",
+            "closedate": "{{closedate}}"
+          },
+          "associations": [
+            {
+              "to": {
+                "id": "{{contact_id}}"
+              },
+              "types": [
+                {
+                  "associationCategory": "HUBSPOT_DEFINED",
+                  "associationTypeId": 1
+                }
+              ]
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "create_deal"
+        }
+      },
+      "tags": [
+        "crm",
+        "deals",
+        "hubspot",
+        "sales"
+      ],
+      "examples": [
+        {
+          "name": "New Sales Deal",
+          "config": {
+            "dealname": "Enterprise Software License",
+            "amount": "50000.00",
+            "dealstage": "qualifiedtobuy",
+            "closedate": "2024-06-30"
+          }
+        }
+      ],
+      "popularity_score": 92
+    },
+    {
+      "id": "hubspot_update_deal",
+      "name": "Update HubSpot Deal",
+      "description": "Update an existing deal in HubSpot CRM with new information",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "deals.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "deal_id",
+            "type": "string",
+            "description": "HubSpot deal ID",
+            "required": true
+          },
+          {
+            "name": "dealname",
+            "type": "string",
+            "description": "Name of the deal"
+          },
+          {
+            "name": "amount",
+            "type": "string",
+            "description": "Deal amount"
+          },
+          {
+            "name": "dealstage",
+            "type": "string",
+            "description": "Deal stage"
+          },
+          {
+            "name": "closedate",
+            "type": "string",
+            "description": "Expected close date (YYYY-MM-DD)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/deals/{{deal_id}}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "dealname": "{{dealname}}",
+            "amount": "{{amount}}",
+            "dealstage": "{{dealstage}}",
+            "closedate": "{{closedate}}"
+          }
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "update_deal"
+        }
+      },
+      "tags": [
+        "crm",
+        "deals",
+        "hubspot",
+        "update"
+      ],
+      "examples": [
+        {
+          "name": "Update Deal Stage",
+          "config": {
+            "deal_id": "67890",
+            "dealstage": "closedwon",
+            "closedate": "2024-05-15"
+          }
+        }
+      ],
+      "popularity_score": 87
+    },
+    {
+      "id": "hubspot_create_company",
+      "name": "Create HubSpot Company",
+      "description": "Create a new company in HubSpot CRM with basic information",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "companies.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Company name",
+            "required": true
+          },
+          {
+            "name": "domain",
+            "type": "string",
+            "description": "Company website domain"
+          },
+          {
+            "name": "industry",
+            "type": "string",
+            "description": "Company industry"
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "description": "Company phone number"
+          },
+          {
+            "name": "city",
+            "type": "string",
+            "description": "Company city"
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "description": "Company state/province"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/companies",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "name": "{{name}}",
+            "domain": "{{domain}}",
+            "industry": "{{industry}}",
+            "phone": "{{phone}}",
+            "city": "{{city}}",
+            "state": "{{state}}"
+          }
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "create_company"
+        }
+      },
+      "tags": [
+        "crm",
+        "companies",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "New Company",
+          "config": {
+            "name": "Tech Solutions Inc",
+            "domain": "techsolutions.com",
+            "industry": "Technology",
+            "city": "San Francisco",
+            "state": "CA"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "hubspot_get_contact_properties",
+      "name": "Get HubSpot Contact Properties",
+      "description": "Retrieve available contact properties and their configurations from HubSpot",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "contacts.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "archived",
+            "type": "boolean",
+            "description": "Include archived properties",
+            "default": false
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/properties/contacts?archived={{archived}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "get_contact_properties"
+        }
+      },
+      "tags": [
+        "crm",
+        "properties",
+        "hubspot",
+        "metadata"
+      ],
+      "examples": [
+        {
+          "name": "Get Active Properties",
+          "config": {
+            "archived": false
+          }
+        }
+      ],
+      "popularity_score": 70
+    },
+    {
+      "id": "hubspot_get_deal_pipeline",
+      "name": "Get HubSpot Deal Pipeline",
+      "description": "Retrieve deal pipeline stages and configurations from HubSpot",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "deals.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "pipeline_id",
+            "type": "string",
+            "description": "Pipeline ID (optional, will use default if not specified)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/pipelines/deals{{#pipeline_id}}/{{pipeline_id}}{{/pipeline_id}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "get_deal_pipeline"
+        }
+      },
+      "tags": [
+        "crm",
+        "pipeline",
+        "hubspot",
+        "deals"
+      ],
+      "examples": [
+        {
+          "name": "Get Default Pipeline",
+          "config": {}
+        }
+      ],
+      "popularity_score": 75
+    },
+    {
+      "id": "hubspot_get_engagement_history",
+      "name": "Get HubSpot Engagement History",
+      "description": "Retrieve recent engagement history including emails, calls, tasks, meetings, and notes for a specific contact, company, or deal",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.contacts.read",
+            "crm.objects.companies.read",
+            "crm.objects.deals.read",
+            "crm.objects.emails.read",
+            "crm.objects.calls.read",
+            "crm.objects.tasks.read",
+            "crm.objects.meetings.read",
+            "crm.objects.notes.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "object_type",
+            "type": "string",
+            "description": "Type of object to get engagement for (contacts, companies, deals)",
+            "required": true,
+            "enum": ["contacts", "companies", "deals"]
+          },
+          {
+            "name": "object_id",
+            "type": "string",
+            "description": "ID of the object to get engagement for",
+            "required": true
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "description": "Maximum number of engagement records to return",
+            "default": 20
+          },
+          {
+            "name": "engagement_types",
+            "type": "string",
+            "description": "Comma-separated list of engagement types (emails, calls, tasks, meetings, notes)",
+            "default": "emails,calls,tasks,meetings,notes"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/{{object_type}}/{{object_id}}/associations/{{engagement_types}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}"
+        },
+        "query_params": {
+          "limit": "{{limit}}"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "get_engagement_history"
+        }
+      },
+      "tags": [
+        "crm",
+        "engagement",
+        "history",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "Get Contact Engagement",
+          "config": {
+            "object_type": "contacts",
+            "object_id": "12345",
+            "limit": 10,
+            "engagement_types": "emails,calls,meetings"
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "hubspot_create_engagement_note",
+      "name": "Create HubSpot Engagement Note",
+      "description": "Create a new note/activity in HubSpot associated with a contact, company, or deal",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.notes.write",
+            "crm.objects.associations.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "hs_note_body",
+            "type": "string",
+            "description": "Content of the note",
+            "required": true
+          },
+          {
+            "name": "hs_timestamp",
+            "type": "string",
+            "description": "Timestamp for the note (ISO 8601 format)",
+            "default": "{{now}}"
+          },
+          {
+            "name": "associated_object_type",
+            "type": "string",
+            "description": "Type of object to associate with (contacts, companies, deals)",
+            "required": true,
+            "enum": ["contacts", "companies", "deals"]
+          },
+          {
+            "name": "associated_object_id",
+            "type": "string",
+            "description": "ID of the object to associate with",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/notes",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "hs_note_body": "{{hs_note_body}}",
+            "hs_timestamp": "{{hs_timestamp}}"
+          },
+          "associations": [
+            {
+              "to": {
+                "id": "{{associated_object_id}}"
+              },
+              "types": [
+                {
+                  "associationCategory": "HUBSPOT_DEFINED",
+                  "associationTypeId": 214
+                }
+              ]
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "create_engagement_note"
+        }
+      },
+      "tags": [
+        "crm",
+        "notes",
+        "engagement",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "Add Contact Note",
+          "config": {
+            "hs_note_body": "Followed up on pricing discussion. Customer interested in enterprise plan.",
+            "associated_object_type": "contacts",
+            "associated_object_id": "12345"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "hubspot_get_company_activity_history",
+      "name": "Get HubSpot Company Activity History",
+      "description": "Retrieve detailed activity history for a company including all associated contacts, deals, and engagement activities",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.companies.read",
+            "crm.objects.contacts.read",
+            "crm.objects.deals.read",
+            "crm.objects.associations.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "company_id",
+            "type": "string",
+            "description": "HubSpot company ID",
+            "required": true
+          },
+          {
+            "name": "include_contacts",
+            "type": "boolean",
+            "description": "Include associated contacts",
+            "default": true
+          },
+          {
+            "name": "include_deals",
+            "type": "boolean",
+            "description": "Include associated deals",
+            "default": true
+          },
+          {
+            "name": "include_activities",
+            "type": "boolean",
+            "description": "Include engagement activities",
+            "default": true
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "description": "Maximum number of records to return per type",
+            "default": 50
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/companies/{{company_id}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}"
+        },
+        "query_params": {
+          "associations": "{{#include_contacts}}contacts{{/include_contacts}}{{#include_deals}},deals{{/include_deals}}",
+          "properties": "name,domain,industry,phone,city,state,createdate,lastmodifieddate"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "get_company_activity_history"
+        }
+      },
+      "tags": [
+        "crm",
+        "companies",
+        "activity",
+        "history",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "Get Full Company History",
+          "config": {
+            "company_id": "12345",
+            "include_contacts": true,
+            "include_deals": true,
+            "include_activities": true,
+            "limit": 100
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "hubspot_get_engagement_timeline",
+      "name": "Get HubSpot Engagement Timeline",
+      "description": "Retrieve chronological timeline of customer engagement across multiple records in HubSpot",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.contacts.read",
+            "crm.objects.companies.read",
+            "crm.objects.deals.read",
+            "crm.objects.emails.read",
+            "crm.objects.calls.read",
+            "crm.objects.tasks.read",
+            "crm.objects.meetings.read",
+            "crm.objects.notes.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "object_type",
+            "type": "string",
+            "description": "Primary object type (contacts, companies, deals)",
+            "required": true,
+            "enum": ["contacts", "companies", "deals"]
+          },
+          {
+            "name": "object_id",
+            "type": "string",
+            "description": "Primary object ID",
+            "required": true
+          },
+          {
+            "name": "start_date",
+            "type": "string",
+            "description": "Start date for timeline (YYYY-MM-DD)",
+            "default": "{{date_subtract_days:30}}"
+          },
+          {
+            "name": "end_date",
+            "type": "string",
+            "description": "End date for timeline (YYYY-MM-DD)",
+            "default": "{{now}}"
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "description": "Maximum number of timeline entries",
+            "default": 100
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/{{object_type}}/{{object_id}}/associations/emails,calls,tasks,meetings,notes",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}"
+        },
+        "query_params": {
+          "limit": "{{limit}}",
+          "hs_createdate__gte": "{{start_date}}",
+          "hs_createdate__lte": "{{end_date}}"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "get_engagement_timeline"
+        }
+      },
+      "tags": [
+        "crm",
+        "timeline",
+        "engagement",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "Get Contact Timeline",
+          "config": {
+            "object_type": "contacts",
+            "object_id": "12345",
+            "start_date": "2024-01-01",
+            "end_date": "2024-12-31",
+            "limit": 50
+          }
+        }
+      ],
+      "popularity_score": 92
+    },
+    {
+      "id": "hubspot_create_association",
+      "name": "Create HubSpot Association",
+      "description": "Create associations between different HubSpot CRM objects (contacts, companies, deals)",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.associations.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "from_object_type",
+            "type": "string",
+            "description": "Source object type (contacts, companies, deals)",
+            "required": true,
+            "enum": ["contacts", "companies", "deals"]
+          },
+          {
+            "name": "from_object_id",
+            "type": "string",
+            "description": "Source object ID",
+            "required": true
+          },
+          {
+            "name": "to_object_type",
+            "type": "string",
+            "description": "Target object type (contacts, companies, deals)",
+            "required": true,
+            "enum": ["contacts", "companies", "deals"]
+          },
+          {
+            "name": "to_object_id",
+            "type": "string",
+            "description": "Target object ID",
+            "required": true
+          },
+          {
+            "name": "association_type",
+            "type": "string",
+            "description": "Type of association (e.g., 'contact_to_company', 'contact_to_deal', 'company_to_deal')",
+            "required": true,
+            "enum": ["contact_to_company", "contact_to_deal", "company_to_deal", "deal_to_contact", "deal_to_company"]
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/{{from_object_type}}/{{from_object_id}}/associations/{{to_object_type}}/{{to_object_id}}",
+        "method": "PUT",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "types": [
+            {
+              "associationCategory": "HUBSPOT_DEFINED",
+              "associationTypeId": "{{association_type}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "create_association"
+        }
+      },
+      "tags": [
+        "crm",
+        "associations",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "Associate Contact with Company",
+          "config": {
+            "from_object_type": "contacts",
+            "from_object_id": "12345",
+            "to_object_type": "companies",
+            "to_object_id": "67890",
+            "association_type": "contact_to_company"
+          }
+        }
+      ],
+      "popularity_score": 80
+    },
+    {
+      "id": "hubspot_update_company",
+      "name": "Update HubSpot Company",
+      "description": "Update an existing company in HubSpot CRM with new information",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.companies.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "company_id",
+            "type": "string",
+            "description": "HubSpot company ID",
+            "required": true
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Company name"
+          },
+          {
+            "name": "domain",
+            "type": "string",
+            "description": "Company website domain"
+          },
+          {
+            "name": "industry",
+            "type": "string",
+            "description": "Company industry"
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "description": "Company phone number"
+          },
+          {
+            "name": "city",
+            "type": "string",
+            "description": "Company city"
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "description": "Company state/province"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/companies/{{company_id}}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "name": "{{name}}",
+            "domain": "{{domain}}",
+            "industry": "{{industry}}",
+            "phone": "{{phone}}",
+            "city": "{{city}}",
+            "state": "{{state}}"
+          }
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "update_company"
+        }
+      },
+      "tags": [
+        "crm",
+        "companies",
+        "hubspot",
+        "update"
+      ],
+      "examples": [
+        {
+          "name": "Update Company Info",
+          "config": {
+            "company_id": "67890",
+            "industry": "Technology",
+            "phone": "+1-555-0199"
+          }
+        }
+      ],
+      "popularity_score": 82
+    },
+    {
+      "id": "hubspot_search_companies",
+      "name": "Search HubSpot Companies",
+      "description": "Search for companies in HubSpot CRM using various criteria",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.companies.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "query",
+            "type": "string",
+            "description": "Search query (e.g., company name, domain)",
+            "required": true
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "description": "Maximum number of results to return",
+            "default": 10
+          },
+          {
+            "name": "properties",
+            "type": "string",
+            "description": "Comma-separated list of properties to return",
+            "default": "name,domain,industry,phone,city,state"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/companies/search",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "query": "{{query}}",
+          "limit": "{{limit}}",
+          "properties": "{{properties}}"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "search_companies"
+        }
+      },
+      "tags": [
+        "crm",
+        "companies",
+        "hubspot",
+        "search"
+      ],
+      "examples": [
+        {
+          "name": "Find Company by Name",
+          "config": {
+            "query": "Tech Solutions",
+            "limit": 5
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "hubspot_search_deals",
+      "name": "Search HubSpot Deals",
+      "description": "Search for deals in HubSpot CRM using various criteria",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.deals.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "query",
+            "type": "string",
+            "description": "Search query (e.g., deal name, amount)",
+            "required": true
+          },
+          {
+            "name": "limit",
+            "type": "number",
+            "description": "Maximum number of results to return",
+            "default": 10
+          },
+          {
+            "name": "properties",
+            "type": "string",
+            "description": "Comma-separated list of properties to return",
+            "default": "dealname,amount,dealstage,closedate,createdate"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/deals/search",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "query": "{{query}}",
+          "limit": "{{limit}}",
+          "properties": "{{properties}}"
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "search_deals"
+        }
+      },
+      "tags": [
+        "crm",
+        "deals",
+        "hubspot",
+        "search"
+      ],
+      "examples": [
+        {
+          "name": "Find Deals by Amount",
+          "config": {
+            "query": "50000",
+            "limit": 5
+          }
+        }
+      ],
+      "popularity_score": 83
+    },
+    {
+      "id": "hubspot_create_conversation_summary",
+      "name": "Create HubSpot Conversation Summary",
+      "description": "Generate a summary of past conversations and interactions for a contact, company, or deal",
+      "category": "crm",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "hubspot",
+          "required": true,
+          "features": [
+            "crm.objects.contacts.read",
+            "crm.objects.companies.read",
+            "crm.objects.deals.read",
+            "crm.objects.notes.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "object_type",
+            "type": "string",
+            "description": "Type of object to summarize (contacts, companies, deals)",
+            "required": true,
+            "enum": ["contacts", "companies", "deals"]
+          },
+          {
+            "name": "object_id",
+            "type": "string",
+            "description": "ID of the object to summarize",
+            "required": true
+          },
+          {
+            "name": "summary_type",
+            "type": "string",
+            "description": "Type of summary to create",
+            "default": "conversation_summary",
+            "enum": ["conversation_summary", "activity_summary", "relationship_summary"]
+          },
+          {
+            "name": "time_period",
+            "type": "string",
+            "description": "Time period for summary (e.g., 'last_30_days', 'last_quarter', 'all_time')",
+            "default": "last_30_days"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.hubapi.com/crm/v3/objects/notes",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:hubspot_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": {
+            "hs_note_body": "{{summary_type}} for {{object_type}} {{object_id}} - {{time_period}}",
+            "hs_timestamp": "{{now}}"
+          },
+          "associations": [
+            {
+              "to": {
+                "id": "{{object_id}}"
+              },
+              "types": [
+                {
+                  "associationCategory": "HUBSPOT_DEFINED",
+                  "associationTypeId": 214
+                }
+              ]
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "hubspot",
+          "operation": "create_conversation_summary"
+        }
+      },
+      "tags": [
+        "crm",
+        "summary",
+        "conversation",
+        "hubspot"
+      ],
+      "examples": [
+        {
+          "name": "Create Contact Summary",
+          "config": {
+            "object_type": "contacts",
+            "object_id": "12345",
+            "summary_type": "conversation_summary",
+            "time_period": "last_30_days"
+          }
+        }
+      ],
+      "popularity_score": 78
+    }
+  ]
+}

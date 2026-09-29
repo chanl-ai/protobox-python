@@ -1,0 +1,1435 @@
+{
+  "version": "1.0.0",
+  "category": "google",
+  "templates": [
+    {
+      "id": "google_calendar_create_event",
+      "name": "Create Calendar Event",
+      "description": "Create a new event in Google Calendar with attendees, reminders, and recurring options",
+      "category": "scheduling",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_calendar",
+          "required": true,
+          "features": [
+            "calendar.events.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "summary",
+            "type": "string",
+            "description": "Event title",
+            "required": true
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "Event description"
+          },
+          {
+            "name": "start",
+            "type": "string",
+            "description": "Start time (RFC3339 format without timezone offset, e.g. 2024-03-15T10:00:00Z)",
+            "required": true
+          },
+          {
+            "name": "end",
+            "type": "string",
+            "description": "End time (RFC3339 format without timezone offset, e.g. 2024-03-15T11:00:00Z)",
+            "required": true
+          },
+          {
+            "name": "location",
+            "type": "string",
+            "description": "Event location"
+          },
+          {
+            "name": "calendar_id",
+            "type": "string",
+            "default": "primary",
+            "description": "Calendar ID (default: primary)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://www.googleapis.com/calendar/v3/calendars/{{calendar_id}}/events",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_calendar_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "google_calendar",
+          "operation": "create_event"
+        },
+        "reminders": {
+          "useDefault": true
+        },
+        "body": {
+          "summary": "{{summary}}",
+          "description": "{{description}}",
+          "start": {
+            "dateTime": "{{start}}",
+            "timeZone": "America/New_York"
+          },
+          "end": {
+            "dateTime": "{{end}}",
+            "timeZone": "America/New_York"
+          },
+          "location": "{{location}}"
+        }
+      },
+      "tags": [
+        "calendar",
+        "meeting",
+        "schedule"
+      ],
+      "examples": [
+        {
+          "name": "Team Meeting",
+          "config": {
+            "summary": "Weekly Team Sync",
+            "description": "Discuss project updates",
+            "start": "2024-03-15T10:00:00Z",
+            "end": "2024-03-15T11:00:00Z",
+            "attendees": [
+              "team@company.com"
+            ]
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "google_calendar_check_availability",
+      "name": "Check Calendar Availability",
+      "description": "Check availability across one or more Google Calendars",
+      "category": "scheduling",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_calendar",
+          "required": true,
+          "features": [
+            "calendar.freebusy.query"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "time_min",
+            "type": "string",
+            "description": "Start of time range to check (RFC3339 format without timezone offset, e.g. 2024-03-18T00:00:00Z)",
+            "required": true
+          },
+          {
+            "name": "time_max",
+            "type": "string",
+            "description": "End of time range to check (RFC3339 format without timezone offset, e.g. 2024-03-22T23:59:59Z)",
+            "required": true
+          },
+          {
+            "name": "time_zone",
+            "type": "string",
+            "default": "UTC",
+            "description": "Timezone for the query (default: UTC)"
+          },
+          {
+            "name": "calendar_id",
+            "type": "string",
+            "default": "primary",
+            "description": "Calendar ID (default: primary)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://www.googleapis.com/calendar/v3/freeBusy",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_calendar_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "timeMin": "{{time_min}}",
+          "timeMax": "{{time_max}}",
+          "timeZone": "{{time_zone}}",
+          "items": [
+            {
+              "id": "{{calendar_id}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "google_calendar",
+          "operation": "check_availability"
+        }
+      },
+      "tags": [
+        "calendar",
+        "availability",
+        "schedule",
+        "freebusy"
+      ],
+      "examples": [
+        {
+          "name": "Check next week availability",
+          "config": {
+            "time_min": "2024-03-18T00:00:00Z",
+            "time_max": "2024-03-22T23:59:59Z",
+            "calendars": [
+              "primary"
+            ],
+            "slot_duration_minutes": 60
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "gmail_send_email",
+      "name": "Send Email via Gmail",
+      "description": "Send an email using Gmail with support for HTML content and attachments",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "gmail",
+          "required": true,
+          "features": [
+            "gmail.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to_name",
+            "type": "string",
+            "description": "Recipient name",
+            "required": true
+          },
+          {
+            "name": "to_email",
+            "type": "string",
+            "description": "Recipient email address",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "description": "Email subject",
+            "required": true
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "description": "Email content",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:gmail_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "raw": "To: {{to_name}} <{{to_email}}>\nSubject: {{subject}}\n\n{{content}}"
+        },
+        "body_preprocessors": [
+          {
+            "type": "base64",
+            "fields": ["raw"]
+          }
+        ]
+      },
+      "tags": [
+        "email",
+        "gmail",
+        "communication"
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "gmail_create_draft",
+      "name": "Create Email Draft",
+      "description": "Create a draft email in Gmail that can be edited and sent later",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "gmail",
+          "required": true,
+          "features": [
+            "gmail.compose"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to_name",
+            "type": "string",
+            "description": "Recipient name",
+            "required": true
+          },
+          {
+            "name": "to_email",
+            "type": "string",
+            "description": "Recipient email address",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "description": "Email subject",
+            "required": true
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "description": "Email content",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://gmail.googleapis.com/gmail/v1/users/me/drafts",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:gmail_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "message": {
+            "raw": "To: {{to_name}} <{{to_email}}>\nSubject: {{subject}}\n\n{{content}}"
+          }
+        },
+        "body_preprocessors": [
+          {
+            "type": "base64",
+            "fields": ["message.raw"]
+          }
+        ]
+      },
+      "tags": [
+        "email",
+        "gmail",
+        "draft"
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "gmail_search_emails",
+      "name": "Search Gmail Messages",
+      "description": "Search for emails in Gmail using advanced query syntax",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "gmail",
+          "required": true,
+          "features": [
+            "gmail.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "query",
+            "type": "string",
+            "description": "Gmail search query (e.g., 'from:user@example.com subject:invoice')",
+            "required": true
+          },
+          {
+            "name": "maxResults",
+            "type": "number",
+            "description": "Maximum number of results to return (1-500, default: 10)",
+            "default": 10
+          },
+          {
+            "name": "includeSpamTrash",
+            "type": "boolean",
+            "description": "Include spam and trash in search results (default: false)",
+            "default": false
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://gmail.googleapis.com/gmail/v1/users/me/messages?q={{query}}&maxResults={{maxResults}}&includeSpamTrash={{includeSpamTrash}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:gmail_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "email",
+        "gmail",
+        "search"
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "google_drive_upload_file",
+      "name": "Upload File to Google Drive",
+      "description": "Upload a file to Google Drive with metadata and folder organization",
+      "category": "storage",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_drive",
+          "required": true,
+          "features": [
+            "drive.file"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "filename",
+            "type": "string",
+            "description": "Name of the file",
+            "required": true
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "description": "File content (base64 encoded for binary files)",
+            "required": true
+          },
+          {
+            "name": "mimeType",
+            "type": "string",
+            "description": "MIME type of the file",
+            "required": true
+          },
+          {
+            "name": "folderId",
+            "type": "string",
+            "description": "ID of the parent folder (optional)"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "File description"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_drive_oauth_token.access_token}"
+        },
+        "body": {
+          "filename": "{{filename}}",
+          "content": "{{content}}",
+          "mimeType": "{{mimeType}}",
+          "folderId": "{{folderId}}",
+          "description": "{{description}}"
+        }
+      },
+      "tags": [
+        "storage",
+        "drive",
+        "upload"
+      ],
+      "popularity_score": 92
+    },
+    {
+      "id": "google_drive_create_folder",
+      "name": "Create Folder in Google Drive",
+      "description": "Create a new folder in Google Drive for organizing files",
+      "category": "storage",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_drive",
+          "required": true,
+          "features": [
+            "drive.file"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Folder name",
+            "required": true
+          },
+          {
+            "name": "parentId",
+            "type": "string",
+            "description": "ID of the parent folder (optional)"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "Folder description"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://www.googleapis.com/drive/v3/files",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_drive_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "{{name}}",
+          "mimeType": "application/vnd.google-apps.folder",
+          "parents": [
+            "{{parentId}}"
+          ]
+        }
+      },
+      "tags": [
+        "storage",
+        "drive",
+        "folder"
+      ],
+      "popularity_score": 87
+    },
+    {
+      "id": "google_drive_share_file",
+      "name": "Share Google Drive File",
+      "description": "Share a file or folder in Google Drive with specific permissions",
+      "category": "storage",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_drive",
+          "required": true,
+          "features": [
+            "drive.file"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "fileId",
+            "type": "string",
+            "description": "ID of the file or folder to share",
+            "required": true
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "description": "Email address to share with",
+            "required": true
+          },
+          {
+            "name": "role",
+            "type": "string",
+            "description": "Permission level (reader, writer, commenter)",
+            "required": true
+          },
+          {
+            "name": "sendNotification",
+            "type": "boolean",
+            "description": "Send email notification to the user (default: true)",
+            "default": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://www.googleapis.com/drive/v3/files/{{fileId}}/permissions",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_drive_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "type": "user",
+          "role": "{{role}}",
+          "emailAddress": "{{email}}"
+        }
+      },
+      "tags": [
+        "storage",
+        "drive",
+        "sharing"
+      ],
+      "popularity_score": 89
+    },
+    {
+      "id": "google_sheets_create_spreadsheet",
+      "name": "Create Google Spreadsheet",
+      "description": "Create a new Google Sheets spreadsheet with initial data",
+      "category": "productivity",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_sheets",
+          "required": true,
+          "features": [
+            "spreadsheets.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Spreadsheet title",
+            "required": true
+          },
+          {
+            "name": "sheets",
+            "type": "string",
+            "description": "Initial sheet data (JSON string)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://sheets.googleapis.com/v4/spreadsheets",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_sheets_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "title": "{{title}}",
+          "sheets": "{{sheets}}"
+        }
+      },
+      "tags": [
+        "spreadsheet",
+        "sheets",
+        "productivity"
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "google_sheets_update_values",
+      "name": "Update Spreadsheet Values",
+      "description": "Update values in a Google Sheets spreadsheet",
+      "category": "productivity",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_sheets",
+          "required": true,
+          "features": [
+            "spreadsheets.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "spreadsheetId",
+            "type": "string",
+            "description": "ID of the spreadsheet",
+            "required": true
+          },
+          {
+            "name": "range",
+            "type": "string",
+            "description": "A1 notation range (e.g., 'Sheet1!A1:D5')",
+            "required": true
+          },
+          {
+            "name": "values",
+            "type": "string",
+            "description": "2D array of values to write (JSON string)",
+            "required": true
+          },
+          {
+            "name": "valueInputOption",
+            "type": "string",
+            "description": "How input data should be interpreted (RAW or USER_ENTERED, default: USER_ENTERED)",
+            "default": "USER_ENTERED"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/{{spreadsheetId}}/values/{{range}}",
+        "method": "PUT",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_sheets_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "values": "{{values}}",
+          "valueInputOption": "{{valueInputOption}}"
+        }
+      },
+      "tags": [
+        "spreadsheet",
+        "sheets",
+        "data"
+      ],
+      "popularity_score": 93
+    },
+    {
+      "id": "google_sheets_read_values",
+      "name": "Read Spreadsheet Values",
+      "description": "Read values from a Google Sheets spreadsheet",
+      "category": "productivity",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_sheets",
+          "required": true,
+          "features": [
+            "spreadsheets.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "spreadsheetId",
+            "type": "string",
+            "description": "ID of the spreadsheet",
+            "required": true
+          },
+          {
+            "name": "range",
+            "type": "string",
+            "description": "A1 notation range (e.g., 'Sheet1!A1:D5')",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://sheets.googleapis.com/v4/spreadsheets/{{spreadsheetId}}/values/{{range}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_sheets_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "spreadsheet",
+        "sheets",
+        "data"
+      ],
+      "popularity_score": 91
+    },
+    {
+      "id": "google_docs_create_document",
+      "name": "Create Google Document",
+      "description": "Create a new Google Docs document with initial content",
+      "category": "productivity",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_docs",
+          "required": true,
+          "features": [
+            "documents.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Document title",
+            "required": true
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "description": "Initial document content"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://docs.googleapis.com/v1/documents",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_docs_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "title": "{{title}}",
+          "content": "{{content}}"
+        }
+      },
+      "tags": [
+        "document",
+        "docs",
+        "productivity"
+      ],
+      "popularity_score": 86
+    },
+    {
+      "id": "google_docs_insert_text",
+      "name": "Insert Text in Document",
+      "description": "Insert text at a specific location in a Google Docs document",
+      "category": "productivity",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_docs",
+          "required": true,
+          "features": [
+            "documents.write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "documentId",
+            "type": "string",
+            "description": "ID of the document",
+            "required": true
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "description": "Text to insert",
+            "required": true
+          },
+          {
+            "name": "index",
+            "type": "number",
+            "description": "Position to insert text (1-based index, default: 1)",
+            "default": 1
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://docs.googleapis.com/v1/documents/{{documentId}}:batchUpdate",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_docs_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "requests": [
+            {
+              "insertText": {
+                "location": {
+                  "index": "{{index}}"
+                },
+                "text": "{{text}}"
+              }
+            }
+          ]
+        }
+      },
+      "tags": [
+        "document",
+        "docs",
+        "editing"
+      ],
+      "popularity_score": 84
+    },
+    {
+      "id": "google_analytics_get_report",
+      "name": "Get Google Analytics Report",
+      "description": "Retrieve data from Google Analytics for a specific profile and date range",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_analytics",
+          "required": true,
+          "features": [
+            "analytics.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "viewId",
+            "type": "string",
+            "description": "View ID for the Google Analytics profile",
+            "required": true
+          },
+          {
+            "name": "startDate",
+            "type": "string",
+            "description": "Start date for the report (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "endDate",
+            "type": "string",
+            "description": "End date for the report (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "metrics",
+            "type": "string",
+            "description": "Array of metrics to include in the report (comma-separated, e.g., 'ga:sessions,ga:pageviews')",
+            "required": true
+          },
+          {
+            "name": "dimensions",
+            "type": "string",
+            "description": "Array of dimensions to include in the report (comma-separated, e.g., 'ga:date,ga:source')",
+            "required": true
+          },
+          {
+            "name": "maxResults",
+            "type": "number",
+            "description": "Maximum number of results to return (1-1000, default: 10)",
+            "default": 10
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://analyticsreporting.googleapis.com/v4/reports:batchGet",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_analytics_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "reportRequests": [
+            {
+              "viewId": "{{viewId}}",
+              "dateRanges": [
+                {
+                  "startDate": "{{startDate}}",
+                  "endDate": "{{endDate}}"
+                }
+              ],
+              "metrics": [
+                {
+                  "expression": "{{metrics}}"
+                }
+              ],
+              "dimensions": [
+                {
+                  "name": "{{dimensions}}"
+                }
+              ],
+              "maxResults": "{{maxResults}}"
+            }
+          ]
+        }
+      },
+      "tags": [
+        "analytics",
+        "google",
+        "report"
+      ],
+      "popularity_score": 80
+    },
+    {
+      "id": "google_ads_get_campaigns",
+      "name": "Get Google Ads Campaigns",
+      "description": "Retrieve a list of campaigns from a Google Ads account",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "type": "number",
+            "description": "Number of campaigns to return (1-1000, default: 10)",
+            "default": 10
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}/campaigns?pageSize={{pageSize}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "campaigns"
+      ],
+      "popularity_score": 75
+    },
+    {
+      "id": "google_analytics_get_realtime_data",
+      "name": "Get Real-time Analytics Data",
+      "description": "Retrieve real-time user activity data from Google Analytics",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_analytics",
+          "required": true,
+          "features": [
+            "analytics.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "viewId",
+            "type": "string",
+            "description": "View ID for the Google Analytics profile",
+            "required": true
+          },
+          {
+            "name": "metrics",
+            "type": "string",
+            "description": "Array of real-time metrics to retrieve (comma-separated)",
+            "required": true
+          },
+          {
+            "name": "dimensions",
+            "type": "string",
+            "description": "Array of dimensions to include in the real-time data (comma-separated)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://analytics.googleapis.com/analytics/v3/data/realtime",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_analytics_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "analytics",
+        "google",
+        "realtime"
+      ],
+      "popularity_score": 78
+    },
+    {
+      "id": "google_analytics_get_user_properties",
+      "name": "Get User Properties",
+      "description": "Retrieve user properties and custom dimensions from Google Analytics",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_analytics",
+          "required": true,
+          "features": [
+            "analytics.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "propertyId",
+            "type": "string",
+            "description": "Property ID for the Google Analytics account",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://analyticsadmin.googleapis.com/v1beta/properties/{{propertyId}}/userProperties",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_analytics_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "analytics",
+        "google",
+        "user-properties"
+      ],
+      "popularity_score": 72
+    },
+    {
+      "id": "google_ads_get_ad_groups",
+      "name": "Get Ad Groups",
+      "description": "Retrieve ad groups within a specific campaign",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          },
+          {
+            "name": "campaignId",
+            "type": "string",
+            "description": "Campaign ID to filter ad groups",
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "type": "number",
+            "description": "Number of ad groups to return (1-1000, default: 10)",
+            "default": 10
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}/adGroups?pageSize={{pageSize}}&filter=campaign.id={{campaignId}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "ad-groups"
+      ],
+      "popularity_score": 73
+    },
+    {
+      "id": "google_ads_get_keywords",
+      "name": "Get Keywords",
+      "description": "Retrieve keyword performance data from Google Ads",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          },
+          {
+            "name": "adGroupId",
+            "type": "string",
+            "description": "Ad Group ID to filter keywords"
+          },
+          {
+            "name": "pageSize",
+            "type": "number",
+            "description": "Number of keywords to return (1-1000, default: 10)",
+            "default": 10
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}/adGroupCriteria?pageSize={{pageSize}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "keywords"
+      ],
+      "popularity_score": 76
+    },
+    {
+      "id": "google_ads_get_ads",
+      "name": "Get Ads",
+      "description": "Retrieve ad performance and creative data from Google Ads",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          },
+          {
+            "name": "adGroupId",
+            "type": "string",
+            "description": "Ad Group ID to filter ads"
+          },
+          {
+            "name": "pageSize",
+            "type": "number",
+            "description": "Number of ads to return (1-1000, default: 10)",
+            "default": 10
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}/ads?pageSize={{pageSize}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "ads"
+      ],
+      "popularity_score": 74
+    },
+    {
+      "id": "google_ads_get_conversions",
+      "name": "Get Conversion Data",
+      "description": "Retrieve conversion tracking data from Google Ads",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          },
+          {
+            "name": "startDate",
+            "type": "string",
+            "description": "Start date for conversion data (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "endDate",
+            "type": "string",
+            "description": "End date for conversion data (YYYY-MM-DD)",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}/conversionActions",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "conversions"
+      ],
+      "popularity_score": 77
+    },
+    {
+      "id": "google_ads_get_account_info",
+      "name": "Get Account Information",
+      "description": "Retrieve account-level information from Google Ads",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "account"
+      ],
+      "popularity_score": 70
+    },
+    {
+      "id": "google_ads_get_budget_reports",
+      "name": "Get Budget Reports",
+      "description": "Retrieve budget and spending data from Google Ads",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          },
+          {
+            "name": "startDate",
+            "type": "string",
+            "description": "Start date for budget data (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "endDate",
+            "type": "string",
+            "description": "End date for budget data (YYYY-MM-DD)",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}/googleAds:searchStream",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "query": "SELECT campaign.id, campaign.name, campaign.budget_amount_micros, campaign.status FROM campaign WHERE segments.date BETWEEN '{{startDate}}' AND '{{endDate}}'"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "budget"
+      ],
+      "popularity_score": 75
+    },
+    {
+      "id": "google_ads_get_quality_scores",
+      "name": "Get Quality Scores",
+      "description": "Retrieve keyword quality score data from Google Ads",
+      "category": "ads",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "google_ads",
+          "required": true,
+          "features": [
+            "adwords.readonly"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customerId",
+            "type": "string",
+            "description": "Customer ID for the Google Ads account",
+            "required": true
+          },
+          {
+            "name": "pageSize",
+            "type": "number",
+            "description": "Number of keywords to return (1-1000, default: 10)",
+            "default": 10
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://googleads.googleapis.com/v14/customers/{{customerId}}/googleAds:searchStream",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:google_ads_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "query": "SELECT ad_group_criterion.keyword.text, ad_group_criterion.quality_info.quality_score, ad_group_criterion.quality_info.creative_quality_score FROM ad_group_criterion WHERE ad_group_criterion.type = 'KEYWORD' LIMIT {{pageSize}}"
+        }
+      },
+      "tags": [
+        "ads",
+        "google",
+        "quality-scores"
+      ],
+      "popularity_score": 73
+    }
+  ]
+}

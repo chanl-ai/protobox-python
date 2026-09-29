@@ -1,0 +1,605 @@
+{
+  "version": "1.0.0",
+  "category": "airtable",
+  "templates": [
+    {
+      "id": "airtable_project_tracker",
+      "name": "Create Project Record",
+      "description": "Track projects with status, assignees, and deadlines",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "airtable",
+          "required": true,
+          "features": [
+            "records.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "base_id",
+            "type": "string",
+            "pattern": "^app[a-zA-Z0-9]{14}$",
+            "description": "Airtable base ID",
+            "required": true
+          },
+          {
+            "name": "project_name",
+            "type": "string",
+            "description": "Project name",
+            "required": true
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "enum": ["Not Started", "In Progress", "On Hold", "Completed", "Cancelled"],
+            "default": "Not Started",
+            "description": "Project status"
+          },
+          {
+            "name": "priority",
+            "type": "string",
+            "enum": ["Low", "Medium", "High", "Critical"],
+            "default": "Medium",
+            "description": "Project priority"
+          },
+          {
+            "name": "assignee",
+            "type": "string",
+            "description": "Person responsible"
+          },
+          {
+            "name": "start_date",
+            "type": "string",
+            "format": "date",
+            "description": "Project start date"
+          },
+          {
+            "name": "due_date",
+            "type": "string",
+            "format": "date",
+            "description": "Project due date"
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "Project description"
+          },
+          {
+            "name": "budget",
+            "type": "number",
+            "description": "Project budget"
+          },
+          {
+            "name": "tags",
+            "type": "string",
+            "description": "JSON string of project tags"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.airtable.com/v0/{{base_id}}/Projects",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:airtable_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "fields": {
+            "Name": "{{project_name}}",
+            "Status": "{{status}}",
+            "Priority": "{{priority}}",
+            "Assignee": "{{assignee}}",
+            "Start Date": "{{start_date}}",
+            "Due Date": "{{due_date}}",
+            "Description": "{{description}}",
+            "Budget": "{{budget}}",
+            "Tags": "{{tags}}"
+          },
+          "typecast": true
+        },
+        "integration_metadata": {
+          "type": "airtable",
+          "operation": "create_project"
+        }
+      },
+      "tags": [
+        "projects",
+        "tracking",
+        "management",
+        "database"
+      ],
+      "examples": [
+        {
+          "name": "Create new project",
+          "config": {
+            "base_id": "app12345678901234",
+            "project_name": "Website Redesign",
+            "status": "Not Started",
+            "priority": "High",
+            "assignee": "John Doe",
+            "start_date": "2024-03-15",
+            "due_date": "2024-04-15",
+            "description": "Complete redesign of company website",
+            "budget": 15000,
+            "tags": "[\"web\", \"design\", \"frontend\"]"
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "airtable_crm_contact",
+      "name": "Add CRM Contact",
+      "description": "Manage customer contacts and interactions",
+      "category": "sales",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "airtable",
+          "required": true,
+          "features": [
+            "records.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "base_id",
+            "type": "string",
+            "pattern": "^app[a-zA-Z0-9]{14}$",
+            "description": "Airtable base ID",
+            "required": true
+          },
+          {
+            "name": "contact_name",
+            "type": "string",
+            "description": "Contact name",
+            "required": true
+          },
+          {
+            "name": "email",
+            "type": "string",
+            "format": "email",
+            "description": "Contact email",
+            "required": true
+          },
+          {
+            "name": "phone",
+            "type": "string",
+            "description": "Contact phone number"
+          },
+          {
+            "name": "company",
+            "type": "string",
+            "description": "Company name"
+          },
+          {
+            "name": "job_title",
+            "type": "string",
+            "description": "Job title"
+          },
+          {
+            "name": "lead_status",
+            "type": "string",
+            "enum": ["New", "Contacted", "Qualified", "Proposal", "Negotiation", "Won", "Lost"],
+            "default": "New",
+            "description": "Lead status"
+          },
+          {
+            "name": "lead_source",
+            "type": "string",
+            "enum": ["Website", "Referral", "Social Media", "Email", "Event", "Cold Call"],
+            "default": "Website",
+            "description": "Lead source"
+          },
+          {
+            "name": "deal_value",
+            "type": "number",
+            "description": "Potential deal value"
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Additional notes"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.airtable.com/v0/{{base_id}}/Contacts",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:airtable_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "fields": {
+            "Name": "{{contact_name}}",
+            "Email": "{{email}}",
+            "Phone": "{{phone}}",
+            "Company": "{{company}}",
+            "Job Title": "{{job_title}}",
+            "Lead Status": "{{lead_status}}",
+            "Lead Source": "{{lead_source}}",
+            "Deal Value": "{{deal_value}}",
+            "Notes": "{{notes}}"
+          }
+        },
+        "integration_metadata": {
+          "type": "airtable",
+          "operation": "add_crm_contact"
+        }
+      },
+      "tags": [
+        "crm",
+        "sales",
+        "contacts",
+        "leads"
+      ],
+      "examples": [
+        {
+          "name": "Add new lead",
+          "config": {
+            "base_id": "app12345678901234",
+            "contact_name": "Jane Smith",
+            "email": "jane.smith@company.com",
+            "phone": "+1-555-0123",
+            "company": "Tech Corp",
+            "job_title": "CTO",
+            "lead_status": "New",
+            "lead_source": "Website",
+            "deal_value": 50000,
+            "notes": "Interested in enterprise solution"
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "airtable_inventory_tracking",
+      "name": "Update Inventory",
+      "description": "Track product inventory levels and movements",
+      "category": "operations",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "airtable",
+          "required": true,
+          "features": [
+            "records.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "base_id",
+            "type": "string",
+            "pattern": "^app[a-zA-Z0-9]{14}$",
+            "description": "Airtable base ID",
+            "required": true
+          },
+          {
+            "name": "product_sku",
+            "type": "string",
+            "description": "Product SKU or ID",
+            "required": true
+          },
+          {
+            "name": "product_name",
+            "type": "string",
+            "description": "Product name"
+          },
+          {
+            "name": "quantity_change",
+            "type": "number",
+            "description": "Positive for additions, negative for removals",
+            "required": true
+          },
+          {
+            "name": "current_quantity",
+            "type": "number",
+            "description": "Current inventory quantity"
+          },
+          {
+            "name": "location",
+            "type": "string",
+            "description": "Warehouse or location"
+          },
+          {
+            "name": "movement_type",
+            "type": "string",
+            "enum": ["Purchase", "Sale", "Return", "Adjustment", "Transfer"],
+            "default": "Adjustment",
+            "description": "Type of inventory movement"
+          },
+          {
+            "name": "unit_cost",
+            "type": "number",
+            "description": "Unit cost of product"
+          },
+          {
+            "name": "notes",
+            "type": "string",
+            "description": "Additional notes"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.airtable.com/v0/{{base_id}}/Inventory",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:airtable_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "fields": {
+            "SKU": "{{product_sku}}",
+            "Product Name": "{{product_name}}",
+            "Quantity Change": "{{quantity_change}}",
+            "Current Quantity": "{{current_quantity}}",
+            "Location": "{{location}}",
+            "Movement Type": "{{movement_type}}",
+            "Unit Cost": "{{unit_cost}}",
+            "Notes": "{{notes}}",
+            "Timestamp": "${now}"
+          }
+        },
+        "integration_metadata": {
+          "type": "airtable",
+          "operation": "update_inventory"
+        }
+      },
+      "tags": [
+        "inventory",
+        "warehouse",
+        "stock",
+        "operations"
+      ],
+      "examples": [
+        {
+          "name": "Record inventory adjustment",
+          "config": {
+            "base_id": "app12345678901234",
+            "product_sku": "PROD-001",
+            "product_name": "Widget A",
+            "quantity_change": -5,
+            "current_quantity": 95,
+            "location": "Main Warehouse",
+            "movement_type": "Adjustment",
+            "unit_cost": 25.00,
+            "notes": "Damaged during shipping"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "airtable_task_management",
+      "name": "Create Task",
+      "description": "Manage team tasks with assignments and due dates",
+      "category": "productivity",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "airtable",
+          "required": true,
+          "features": [
+            "records.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "base_id",
+            "type": "string",
+            "pattern": "^app[a-zA-Z0-9]{14}$",
+            "description": "Airtable base ID",
+            "required": true
+          },
+          {
+            "name": "task_name",
+            "type": "string",
+            "description": "Task name",
+            "required": true
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "Task description"
+          },
+          {
+            "name": "assignee",
+            "type": "string",
+            "description": "Person assigned to task",
+            "required": true
+          },
+          {
+            "name": "due_date",
+            "type": "string",
+            "format": "date",
+            "description": "Task due date"
+          },
+          {
+            "name": "priority",
+            "type": "string",
+            "enum": ["Low", "Medium", "High", "Urgent"],
+            "default": "Medium",
+            "description": "Task priority"
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "enum": ["To Do", "In Progress", "Review", "Done", "Blocked"],
+            "default": "To Do",
+            "description": "Task status"
+          },
+          {
+            "name": "project_link",
+            "type": "string",
+            "description": "Link to related project record"
+          },
+          {
+            "name": "estimated_hours",
+            "type": "number",
+            "description": "Estimated hours to complete"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.airtable.com/v0/{{base_id}}/Tasks",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:airtable_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "fields": {
+            "Task": "{{task_name}}",
+            "Description": "{{description}}",
+            "Assignee": "{{assignee}}",
+            "Due Date": "{{due_date}}",
+            "Priority": "{{priority}}",
+            "Status": "{{status}}",
+            "Project": ["{{project_link}}"],
+            "Estimated Hours": "{{estimated_hours}}"
+          }
+        },
+        "integration_metadata": {
+          "type": "airtable",
+          "operation": "create_task"
+        }
+      },
+      "tags": [
+        "tasks",
+        "productivity",
+        "team",
+        "workflow"
+      ],
+      "examples": [
+        {
+          "name": "Create development task",
+          "config": {
+            "base_id": "app12345678901234",
+            "task_name": "Implement user authentication",
+            "description": "Add login/signup functionality to the app",
+            "assignee": "Developer Team",
+            "due_date": "2024-03-25",
+            "priority": "High",
+            "status": "To Do",
+            "project_link": "rec12345678901234",
+            "estimated_hours": 16
+          }
+        }
+      ],
+      "popularity_score": 87
+    },
+    {
+      "id": "airtable_data_sync",
+      "name": "Sync External Data",
+      "description": "Import and sync data from external sources",
+      "category": "integration",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "airtable",
+          "required": true,
+          "features": [
+            "records.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "base_id",
+            "type": "string",
+            "pattern": "^app[a-zA-Z0-9]{14}$",
+            "description": "Airtable base ID",
+            "required": true
+          },
+          {
+            "name": "table_name",
+            "type": "string",
+            "description": "Target table name",
+            "required": true
+          },
+          {
+            "name": "records",
+            "type": "string",
+            "description": "JSON string of records to sync",
+            "required": true
+          },
+          {
+            "name": "update_existing",
+            "type": "boolean",
+            "default": true,
+            "description": "Update existing records"
+          },
+          {
+            "name": "match_field",
+            "type": "string",
+            "description": "Field to match for updates (e.g., 'Email', 'ID')"
+          },
+          {
+            "name": "sync_timestamp",
+            "type": "boolean",
+            "default": true,
+            "description": "Add sync timestamp"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.airtable.com/v0/{{base_id}}/{{table_name}}",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:airtable_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "records": "{{#records}}{ \"fields\": {{.}} }{{/records}}",
+          "typecast": true
+        },
+        "integration_metadata": {
+          "type": "airtable",
+          "operation": "sync_external_data"
+        },
+        "batch_processing": {
+          "enabled": true,
+          "batch_size": 10,
+          "delay_ms": 200
+        }
+      },
+      "tags": [
+        "sync",
+        "integration",
+        "import",
+        "data"
+      ],
+      "examples": [
+        {
+          "name": "Sync customer data",
+          "config": {
+            "base_id": "app12345678901234",
+            "table_name": "Customers",
+            "records": "[{\"Name\": \"John Doe\", \"Email\": \"john@example.com\"}, {\"Name\": \"Jane Smith\", \"Email\": \"jane@example.com\"}]",
+            "update_existing": true,
+            "match_field": "Email",
+            "sync_timestamp": true
+          }
+        }
+      ],
+      "popularity_score": 80
+    }
+  ]
+}

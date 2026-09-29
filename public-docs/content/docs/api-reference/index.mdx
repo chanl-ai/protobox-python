@@ -1,0 +1,174 @@
+---
+title: API Reference
+description: Complete reference for all 28 Mocopo admin endpoints
+---
+
+# API Reference
+
+The Mocopo Admin API provides 28 endpoints for managing actions, secrets, and executions. All endpoints are REST-compliant and return JSON responses.
+
+## Base URL
+
+```
+http://localhost:8080/admin/api/v1
+```
+
+## Authentication
+
+All API endpoints require authentication. Currently supported:
+- API Key authentication (in development)
+- App-level authentication for trusted applications
+
+## Endpoint Categories
+
+### Actions Management
+Manage the four types of actions: REST, CODE_RUN, O3, and DATABASE.
+
+- **[Actions](/docs/api-reference/actions)** - Create, read, update, delete actions
+- **[Action Testing](/docs/api-reference/actions/test)** - Test action execution
+
+### Secrets Management
+Securely store and manage encrypted secrets with AES-256-GCM encryption.
+
+- **[Secrets](/docs/api-reference/secrets)** - Manage encrypted secrets
+- **[Secret Types](/docs/api-reference/secrets/types)** - API_KEY, DATABASE_URL, OAUTH_TOKEN, etc.
+
+### Execution Management
+Execute actions and track their status with comprehensive logging.
+
+- **[Executions](/docs/api-reference/executions)** - Execute actions and track status
+- **[Execution Retry](/docs/api-reference/executions/retry)** - Retry failed executions
+
+### Admin Operations
+System health, metrics, and administrative functions.
+
+- **[Health Check](/docs/api-reference/admin/health)** - System health and status
+- **[Metrics](/docs/api-reference/admin/metrics)** - Performance and usage metrics
+
+## Quick Examples
+
+### Create an Action
+```bash
+curl -X POST http://localhost:8080/admin/api/v1/actions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "weather_api",
+    "type": "REST",
+    "description": "Get weather information",
+    "default_config": {
+      "url": "https://api.openweathermap.org/data/2.5/weather",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer ${WEATHER_API_KEY}"
+      }
+    }
+  }'
+```
+
+### Create a Secret
+```bash
+curl -X POST http://localhost:8080/admin/api/v1/secrets \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "weather_api_key",
+    "secret_type": "API_KEY", 
+    "secret_value": "your-api-key-here",
+    "description": "Weather API key"
+  }'
+```
+
+### Execute an Action
+```bash
+curl -X POST http://localhost:8080/admin/api/v1/executions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action_id": "action-uuid-here",
+    "input_data": {
+      "q": "Tokyo",
+      "units": "metric"
+    }
+  }'
+```
+
+## Response Format
+
+All endpoints return JSON in this format:
+
+### Success Response
+```json
+{
+  "success": true,
+  "data": {
+    // Response data
+  },
+  "message": "Operation completed successfully"
+}
+```
+
+### Error Response
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "Invalid input data",
+    "details": {
+      // Error details
+    }
+  }
+}
+```
+
+## Status Codes
+
+- **200 OK** - Request successful
+- **201 Created** - Resource created successfully
+- **400 Bad Request** - Invalid input data
+- **401 Unauthorized** - Authentication required
+- **403 Forbidden** - Insufficient permissions
+- **404 Not Found** - Resource not found
+- **422 Unprocessable Entity** - Validation errors
+- **500 Internal Server Error** - Server error
+
+## Rate Limiting
+
+The API implements rate limiting to ensure fair usage:
+- **100 requests per minute** for general endpoints
+- **10 requests per minute** for execution endpoints
+- **5 requests per minute** for admin operations
+
+## Pagination
+
+List endpoints support pagination with these parameters:
+- `limit` - Number of items per page (default: 20, max: 100)
+- `offset` - Number of items to skip (default: 0)
+- `sort` - Sort field and direction (e.g., `created_at:desc`)
+
+Example:
+```bash
+curl "http://localhost:8080/admin/api/v1/actions?limit=10&offset=0&sort=created_at:desc"
+```
+
+## Filtering
+
+Most list endpoints support filtering:
+- `type` - Filter by action type
+- `status` - Filter by status
+- `created_after` - Filter by creation date
+- `created_before` - Filter by creation date
+
+Example:
+```bash
+curl "http://localhost:8080/admin/api/v1/actions?type=REST&status=active"
+```
+
+## Next Steps
+
+Explore the detailed documentation for each endpoint category:
+
+- **[Actions API](/docs/api-reference/actions)** - Complete actions management
+- **[Secrets API](/docs/api-reference/secrets)** - Secure secret management  
+- **[Executions API](/docs/api-reference/executions)** - Action execution and monitoring
+- **[Admin API](/docs/api-reference/admin)** - System administration
+
+Or check out the **[Python SDK](/docs/sdk)** for type-safe client integration.

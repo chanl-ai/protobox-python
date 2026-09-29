@@ -1,0 +1,478 @@
+{
+  "version": "1.0.0",
+  "category": "anthropic",
+  "templates": [
+    {
+      "id": "anthropic_content_generation",
+      "name": "Generate Content",
+      "description": "Generate blog posts, articles, and marketing copy with Claude",
+      "category": "content",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "anthropic",
+          "required": true,
+          "features": [
+            "messages.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "prompt",
+            "type": "string",
+            "description": "Content requirements and instructions",
+            "required": true
+          },
+          {
+            "name": "content_type",
+            "type": "string",
+            "enum": ["blog_post", "article", "social_media", "email", "product_description", "ad_copy"],
+            "description": "Type of content to generate",
+            "required": true
+          },
+          {
+            "name": "tone",
+            "type": "string",
+            "enum": ["professional", "casual", "friendly", "authoritative", "persuasive"],
+            "default": "professional",
+            "description": "Content tone"
+          },
+          {
+            "name": "length",
+            "type": "string",
+            "enum": ["short", "medium", "long"],
+            "default": "medium",
+            "description": "Content length"
+          },
+          {
+            "name": "keywords",
+            "type": "string",
+            "description": "Comma-separated list of SEO keywords to include"
+          },
+          {
+            "name": "model",
+            "type": "string",
+            "enum": ["claude-3-opus-20240229", "claude-3-sonnet-20240229", "claude-3-haiku-20240307"],
+            "default": "claude-3-sonnet-20240229",
+            "description": "Claude model to use"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "headers": {
+          "x-api-key": "${secret:anthropic_api_key}",
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        "body": {
+          "model": "{{model}}",
+          "max_tokens": 4096,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Generate a {{content_type}} with {{tone}} tone. Length: {{length}}. Keywords: {{keywords}}. Requirements: {{prompt}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "anthropic",
+          "operation": "content_generation"
+        }
+      },
+      "tags": [
+        "ai",
+        "content",
+        "generation",
+        "marketing"
+      ],
+      "examples": [
+        {
+          "name": "Generate blog post",
+          "config": {
+            "prompt": "Write about the benefits of AI in customer service",
+            "content_type": "blog_post",
+            "tone": "professional",
+            "length": "medium",
+            "keywords": "AI, customer service, automation, efficiency",
+            "model": "claude-3-sonnet-20240229"
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "anthropic_data_analysis",
+      "name": "Analyze Business Data",
+      "description": "Extract insights and patterns from business data",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "anthropic",
+          "required": true,
+          "features": [
+            "messages.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "data",
+            "type": "string",
+            "description": "Data to analyze (CSV, JSON, or text)",
+            "required": true
+          },
+          {
+            "name": "analysis_type",
+            "type": "string",
+            "enum": ["summary", "trends", "anomalies", "predictions", "recommendations"],
+            "description": "Type of analysis needed",
+            "required": true
+          },
+          {
+            "name": "focus_areas",
+            "type": "string",
+            "description": "Comma-separated list of specific areas to focus on"
+          },
+          {
+            "name": "output_format",
+            "type": "string",
+            "enum": ["text", "json", "markdown", "csv"],
+            "default": "markdown",
+            "description": "Output format for analysis"
+          },
+          {
+            "name": "model",
+            "type": "string",
+            "default": "claude-3-sonnet-20240229",
+            "description": "Claude model to use"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "headers": {
+          "x-api-key": "${secret:anthropic_api_key}",
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        "body": {
+          "model": "{{model}}",
+          "max_tokens": 8192,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Analyze this data for {{analysis_type}}. Focus on: {{focus_areas}}. Output format: {{output_format}}. Data: {{data}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "anthropic",
+          "operation": "data_analysis"
+        }
+      },
+      "tags": [
+        "ai",
+        "analytics",
+        "insights",
+        "data"
+      ],
+      "examples": [
+        {
+          "name": "Analyze sales data",
+          "config": {
+            "data": "Month,Sales,Costs,Profit\nJan,10000,6000,4000\nFeb,12000,7000,5000\nMar,11000,6500,4500",
+            "analysis_type": "trends",
+            "focus_areas": "sales growth, profit margins, seasonal patterns",
+            "output_format": "markdown"
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "anthropic_customer_support",
+      "name": "AI Customer Support",
+      "description": "Generate helpful customer support responses",
+      "category": "support",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "anthropic",
+          "required": true,
+          "features": [
+            "messages.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customer_message",
+            "type": "string",
+            "description": "Customer's question or issue",
+            "required": true
+          },
+          {
+            "name": "customer_name",
+            "type": "string",
+            "description": "Customer's name"
+          },
+          {
+            "name": "context",
+            "type": "string",
+            "description": "Additional context (order info, account details)"
+          },
+          {
+            "name": "knowledge_base",
+            "type": "string",
+            "description": "Product knowledge or FAQ content"
+          },
+          {
+            "name": "tone",
+            "type": "string",
+            "enum": ["professional", "friendly", "empathetic", "technical"],
+            "default": "friendly",
+            "description": "Response tone"
+          },
+          {
+            "name": "include_next_steps",
+            "type": "boolean",
+            "default": true,
+            "description": "Include next steps in response"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "headers": {
+          "x-api-key": "${secret:anthropic_api_key}",
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        "body": {
+          "model": "claude-3-haiku-20240307",
+          "max_tokens": 1024,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Customer {{customer_name}} asks: {{customer_message}}. Context: {{context}}. Knowledge: {{knowledge_base}}. Respond in {{tone}} tone. Include next steps: {{include_next_steps}}"
+            }
+          ],
+          "system": "You are a helpful customer support assistant. Be concise, accurate, and empathetic."
+        },
+        "integration_metadata": {
+          "type": "anthropic",
+          "operation": "customer_support"
+        }
+      },
+      "tags": [
+        "ai",
+        "support",
+        "customer_service",
+        "automation"
+      ],
+      "examples": [
+        {
+          "name": "Handle refund request",
+          "config": {
+            "customer_message": "I need a refund for my order #12345",
+            "customer_name": "Sarah Johnson",
+            "context": "Order placed 3 days ago, item arrived damaged",
+            "knowledge_base": "Refund policy: 30-day returns, damaged items eligible for full refund",
+            "tone": "empathetic",
+            "include_next_steps": true
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "anthropic_code_review",
+      "name": "Code Review & Suggestions",
+      "description": "Review code for bugs, security issues, and improvements",
+      "category": "development",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "anthropic",
+          "required": true,
+          "features": [
+            "messages.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "code",
+            "type": "string",
+            "description": "Code to review",
+            "required": true
+          },
+          {
+            "name": "language",
+            "type": "string",
+            "description": "Programming language",
+            "required": true
+          },
+          {
+            "name": "review_focus",
+            "type": "string",
+            "description": "Comma-separated list of focus areas (bugs, security, performance, style, best_practices)"
+          },
+          {
+            "name": "context",
+            "type": "string",
+            "description": "What the code is supposed to do"
+          },
+          {
+            "name": "suggest_fixes",
+            "type": "boolean",
+            "default": true,
+            "description": "Suggest fixes for issues found"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "headers": {
+          "x-api-key": "${secret:anthropic_api_key}",
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        "body": {
+          "model": "claude-3-opus-20240229",
+          "max_tokens": 4096,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Review this {{language}} code for {{review_focus}}. Context: {{context}}. Suggest fixes: {{suggest_fixes}}. Code:\n\n{{code}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "anthropic",
+          "operation": "code_review"
+        }
+      },
+      "tags": [
+        "ai",
+        "development",
+        "code_review",
+        "quality"
+      ],
+      "examples": [
+        {
+          "name": "Review Python function",
+          "config": {
+            "code": "def calculate_total(items):\n    total = 0\n    for item in items:\n        total += item['price']\n    return total",
+            "language": "Python",
+            "review_focus": "bugs, security, best_practices",
+            "context": "Function to calculate total price of items in a shopping cart",
+            "suggest_fixes": true
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "anthropic_document_summarization",
+      "name": "Summarize Documents",
+      "description": "Create concise summaries of long documents",
+      "category": "productivity",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "anthropic",
+          "required": true,
+          "features": [
+            "messages.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "document",
+            "type": "string",
+            "description": "Document text to summarize",
+            "required": true
+          },
+          {
+            "name": "summary_type",
+            "type": "string",
+            "enum": ["executive", "bullet_points", "key_takeaways", "action_items"],
+            "default": "executive",
+            "description": "Type of summary to generate"
+          },
+          {
+            "name": "max_length",
+            "type": "number",
+            "description": "Maximum words in summary",
+            "default": 500
+          },
+          {
+            "name": "focus_topics",
+            "type": "string",
+            "description": "Comma-separated list of topics to emphasize"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.anthropic.com/v1/messages",
+        "method": "POST",
+        "headers": {
+          "x-api-key": "${secret:anthropic_api_key}",
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json"
+        },
+        "body": {
+          "model": "claude-3-haiku-20240307",
+          "max_tokens": 2048,
+          "messages": [
+            {
+              "role": "user",
+              "content": "Summarize this document as {{summary_type}}. Max {{max_length}} words. Focus on: {{focus_topics}}. Document:\n\n{{document}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "anthropic",
+          "operation": "document_summarization"
+        }
+      },
+      "tags": [
+        "ai",
+        "productivity",
+        "summarization",
+        "documents"
+      ],
+      "examples": [
+        {
+          "name": "Summarize research paper",
+          "config": {
+            "document": "This research paper discusses the impact of artificial intelligence on modern business practices...",
+            "summary_type": "executive",
+            "max_length": 300,
+            "focus_topics": "AI applications, business impact, implementation challenges"
+          }
+        }
+      ],
+      "popularity_score": 82
+    }
+  ]
+}

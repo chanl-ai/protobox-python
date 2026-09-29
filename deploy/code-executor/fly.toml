@@ -1,0 +1,65 @@
+# Fly.io configuration for MCP Code Executor
+app = "mcp-code-executor"
+primary_region = "iad"  # Change to your preferred region
+
+[build]
+  dockerfile = "docker/code-executor/Dockerfile"
+
+[env]
+  PYTHONUNBUFFERED = "1"
+  PYTHONDONTWRITEBYTECODE = "1"
+  EXECUTION_TIMEOUT = "30"
+  MEMORY_LIMIT_MB = "256"
+  MAX_PROCESSES = "50"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  # Health check configuration
+  [http_service.checks]
+    [http_service.checks.health]
+      grace_period = "10s"
+      interval = "30s"
+      restart_limit = 3
+      timeout = "5s"
+      type = "http"
+      path = "/health"
+
+[machine]
+  # Resource limits for security
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"
+  
+  # Auto-scale configuration
+  auto_destroy = true
+  min_machines_running = 0
+  max_machines_running = 2
+
+[deploy]
+  # Rolling deployment strategy
+  strategy = "rolling"
+  wait_timeout = "10m"
+
+# Security and monitoring
+[metrics]
+  port = 9091
+  path = "/metrics"
+
+# Secrets configuration (use fly secrets set)
+# FLY_SECRET_KEY=your-secret-key
+# MONGO_CONNECTION_STRING=your-mongo-connection
+
+# Mount tmpfs for temporary file operations
+[[mounts]]
+  source = "tmp_volume"
+  destination = "/tmp"
+  
+# Process configuration
+[[processes]]
+  app = "python -m protobox.admin.actions.code_run_service" 

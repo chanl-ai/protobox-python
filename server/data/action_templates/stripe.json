@@ -1,0 +1,456 @@
+{
+  "version": "1.0.0",
+  "category": "stripe",
+  "templates": [
+    {
+      "id": "stripe_create_subscription",
+      "name": "Create Subscription",
+      "description": "Set up recurring subscription for SaaS customers",
+      "category": "subscriptions",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "stripe",
+          "required": true,
+          "features": [
+            "subscriptions.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customer_email",
+            "type": "string",
+            "format": "email",
+            "description": "Customer email address",
+            "required": true
+          },
+          {
+            "name": "price_id",
+            "type": "string",
+            "description": "Stripe Price ID for subscription plan",
+            "required": true
+          },
+          {
+            "name": "trial_days",
+            "type": "number",
+            "minimum": 0,
+            "default": 0,
+            "description": "Free trial period in days"
+          },
+          {
+            "name": "metadata",
+            "type": "string",
+            "description": "JSON string of custom metadata (e.g., campaign_id, referral_source)"
+          },
+          {
+            "name": "payment_method_id",
+            "type": "string",
+            "description": "Payment method ID if already collected"
+          },
+          {
+            "name": "coupon",
+            "type": "string",
+            "description": "Discount coupon code"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.stripe.com/v1/subscriptions",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:stripe_api_key}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "customer": "{{customer_id}}",
+          "items[0][price]": "{{price_id}}",
+          "trial_period_days": "{{trial_days}}",
+          "metadata": "{{metadata}}",
+          "coupon": "{{coupon}}"
+        },
+        "integration_metadata": {
+          "type": "stripe",
+          "operation": "create_subscription"
+        },
+        "pre_actions": [
+          {
+            "action": "find_or_create_customer",
+            "url": "https://api.stripe.com/v1/customers",
+            "params": {
+              "email": "{{customer_email}}"
+            }
+          }
+        ]
+      },
+      "tags": [
+        "subscription",
+        "recurring",
+        "saas",
+        "revenue"
+      ],
+      "examples": [
+        {
+          "name": "Create monthly subscription",
+          "config": {
+            "customer_email": "customer@example.com",
+            "price_id": "price_1234567890",
+            "trial_days": 7,
+            "metadata": "{\"campaign_id\": \"winter2024\", \"referral_source\": \"website\"}"
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "stripe_create_checkout_session",
+      "name": "Create Checkout Session",
+      "description": "Generate checkout link for marketing campaigns and product launches",
+      "category": "payments",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "stripe",
+          "required": true,
+          "features": [
+            "checkout.sessions.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "price_id",
+            "type": "string",
+            "description": "Product price ID",
+            "required": true
+          },
+          {
+            "name": "quantity",
+            "type": "number",
+            "minimum": 1,
+            "default": 1,
+            "description": "Quantity of items"
+          },
+          {
+            "name": "mode",
+            "type": "string",
+            "enum": ["payment", "subscription", "setup"],
+            "default": "payment",
+            "description": "Checkout mode"
+          },
+          {
+            "name": "success_url",
+            "type": "string",
+            "format": "uri",
+            "description": "Redirect URL after successful payment",
+            "required": true
+          },
+          {
+            "name": "cancel_url",
+            "type": "string",
+            "format": "uri",
+            "description": "Redirect URL if customer cancels",
+            "required": true
+          },
+          {
+            "name": "customer_email",
+            "type": "string",
+            "format": "email",
+            "description": "Pre-fill customer email"
+          },
+          {
+            "name": "allow_promotion_codes",
+            "type": "boolean",
+            "default": true,
+            "description": "Allow discount codes"
+          },
+          {
+            "name": "utm_parameters",
+            "type": "string",
+            "description": "JSON string of marketing attribution parameters"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.stripe.com/v1/checkout/sessions",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:stripe_api_key}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "line_items[0][price]": "{{price_id}}",
+          "line_items[0][quantity]": "{{quantity}}",
+          "mode": "{{mode}}",
+          "success_url": "{{success_url}}",
+          "cancel_url": "{{cancel_url}}",
+          "customer_email": "{{customer_email}}",
+          "allow_promotion_codes": "{{allow_promotion_codes}}",
+          "metadata[utm_source]": "{{utm_parameters.utm_source}}",
+          "metadata[utm_medium]": "{{utm_parameters.utm_medium}}",
+          "metadata[utm_campaign]": "{{utm_parameters.utm_campaign}}"
+        },
+        "integration_metadata": {
+          "type": "stripe",
+          "operation": "create_checkout_session"
+        }
+      },
+      "tags": [
+        "checkout",
+        "payments",
+        "marketing",
+        "campaigns"
+      ],
+      "examples": [
+        {
+          "name": "Create product checkout",
+          "config": {
+            "price_id": "price_1234567890",
+            "quantity": 1,
+            "mode": "payment",
+            "success_url": "https://example.com/success",
+            "cancel_url": "https://example.com/cancel",
+            "customer_email": "customer@example.com",
+            "utm_parameters": "{\"utm_source\": \"email\", \"utm_medium\": \"newsletter\", \"utm_campaign\": \"spring2024\"}"
+          }
+        }
+      ],
+      "popularity_score": 92
+    },
+    {
+      "id": "stripe_track_revenue_metrics",
+      "name": "Get Revenue Metrics",
+      "description": "Retrieve revenue metrics for marketing reports and dashboards",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "stripe",
+          "required": true,
+          "features": [
+            "reporting.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "date_from",
+            "type": "string",
+            "format": "date",
+            "description": "Start date for metrics",
+            "required": true
+          },
+          {
+            "name": "date_to",
+            "type": "string",
+            "format": "date",
+            "description": "End date for metrics",
+            "required": true
+          },
+          {
+            "name": "metrics",
+            "type": "string",
+            "description": "Comma-separated list of metrics to retrieve (mrr, arr, churn_rate, ltv, new_customers, revenue)",
+            "default": "mrr,new_customers"
+          },
+          {
+            "name": "group_by",
+            "type": "string",
+            "enum": ["day", "week", "month"],
+            "default": "month",
+            "description": "Grouping period"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.stripe.com/v1/reporting/report_runs",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:stripe_api_key}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "report_type": "balance.summary.1",
+          "parameters[interval_start]": "{{date_from}}",
+          "parameters[interval_end]": "{{date_to}}",
+          "parameters[columns]": "{{metrics}}"
+        },
+        "integration_metadata": {
+          "type": "stripe",
+          "operation": "track_revenue_metrics"
+        }
+      },
+      "tags": [
+        "analytics",
+        "revenue",
+        "metrics",
+        "reporting"
+      ],
+      "examples": [
+        {
+          "name": "Get Q1 revenue metrics",
+          "config": {
+            "date_from": "2024-01-01",
+            "date_to": "2024-03-31",
+            "metrics": "mrr,arr,new_customers,revenue",
+            "group_by": "month"
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "stripe_create_customer_portal",
+      "name": "Create Customer Portal Session",
+      "description": "Generate link for customers to manage subscriptions and billing",
+      "category": "customer_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "stripe",
+          "required": true,
+          "features": [
+            "billing_portal.sessions.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customer_id",
+            "type": "string",
+            "description": "Stripe Customer ID",
+            "required": true
+          },
+          {
+            "name": "return_url",
+            "type": "string",
+            "format": "uri",
+            "description": "URL to return after portal session",
+            "required": true
+          },
+          {
+            "name": "configuration",
+            "type": "string",
+            "description": "Portal configuration ID (optional)"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.stripe.com/v1/billing_portal/sessions",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:stripe_api_key}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "customer": "{{customer_id}}",
+          "return_url": "{{return_url}}",
+          "configuration": "{{configuration}}"
+        },
+        "integration_metadata": {
+          "type": "stripe",
+          "operation": "create_customer_portal"
+        }
+      },
+      "tags": [
+        "portal",
+        "self-service",
+        "subscription_management"
+      ],
+      "examples": [
+        {
+          "name": "Create billing portal session",
+          "config": {
+            "customer_id": "cus_1234567890",
+            "return_url": "https://example.com/dashboard",
+            "configuration": "bpc_1234567890"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "stripe_apply_coupon",
+      "name": "Apply Promotional Coupon",
+      "description": "Apply discount coupons for marketing campaigns",
+      "category": "promotions",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "stripe",
+          "required": true,
+          "features": [
+            "subscriptions.update"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "customer_id",
+            "type": "string",
+            "description": "Customer to apply coupon to"
+          },
+          {
+            "name": "subscription_id",
+            "type": "string",
+            "description": "Subscription to apply coupon to"
+          },
+          {
+            "name": "coupon_id",
+            "type": "string",
+            "description": "Coupon/promotion code ID",
+            "required": true
+          },
+          {
+            "name": "campaign_name",
+            "type": "string",
+            "description": "Marketing campaign name for tracking"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.stripe.com/v1/subscriptions/{{subscription_id}}",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:stripe_api_key}",
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        "body": {
+          "coupon": "{{coupon_id}}",
+          "metadata[campaign]": "{{campaign_name}}"
+        },
+        "integration_metadata": {
+          "type": "stripe",
+          "operation": "apply_coupon"
+        }
+      },
+      "tags": [
+        "discounts",
+        "promotions",
+        "marketing",
+        "coupons"
+      ],
+      "examples": [
+        {
+          "name": "Apply welcome discount",
+          "config": {
+            "subscription_id": "sub_1234567890",
+            "coupon_id": "WELCOME20",
+            "campaign_name": "New User Onboarding"
+          }
+        }
+      ],
+      "popularity_score": 80
+    }
+  ]
+}

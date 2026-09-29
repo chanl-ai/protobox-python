@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "my-mcp-server": {
+      "url": "https://your-mcp-server.fly.dev/mcp/sse",
+      "transport": "sse",
+      "headers": {
+        "Authorization": "Bearer your-api-key"
+      }
+    }
+  }
+} 

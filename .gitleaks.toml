@@ -1,0 +1,12 @@
+# Test fixtures and docs use placeholder credentials on purpose.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Placeholder credentials in tests and docs"
+paths = [
+  '''^server/tests/''',
+  '''^services/document-processor/tests/''',
+  '''^services/document-processor/(test_service|final_validation_test)\.py$''',
+  '''^docs/''',
+]

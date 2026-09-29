@@ -1,0 +1,98 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "protobox-ai"
+version = "0.1.0"
+description = "Easy-to-use Model Context Protocol (MCP) server for AI tool integration"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Protobox contributors"}
+]
+keywords = ["mcp", "ai", "chatgpt", "claude", "openai", "anthropic", "tools", "actions", "protobox"]
+repository = "https://github.com/chanl-ai/protobox-python"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "pydantic>=2.0.0",
+    "loguru>=0.7.0",
+    "aiohttp>=3.8.0",
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "websockets>=11.0.0",
+    "tenacity>=8.0.0",
+    "certifi>=2023.0.0",
+    "pyyaml>=6.0.0",
+    "click>=8.0.0",
+    # Phase 1A dependencies
+    "motor>=3.3.0", # Async MongoDB driver
+    "pymongo>=4.5.0", # MongoDB driver
+    "cryptography>=41.0.0", # For AES encryption
+    "pyjwt>=2.8.0", # JWT tokens
+    "passlib[bcrypt]>=1.7.4", # Password hashing
+    "python-multipart>=0.0.6", # Form data parsing
+    "requests>=2.28.0", # HTTP requests for Supabase
+    # CLI dependencies
+    "rich>=13.0.0", # Rich terminal output
+    # OpenAI Assistant integration
+    "openai>=1.0.0", # OpenAI SDK for Assistant API
+    # MCP integration for OpenAI Agents
+    "openai-agents>=0.2.0", # OpenAI Agents SDK with MCP support
+    # Local development support
+    "python-dotenv>=1.0.0", # Load .env files for local dev
+    "sse-starlette>=1.6.0", # SSE support for MCP protocol
+    "fastmcp>=2.10.6",
+]
+
+[project.scripts]
+protobox = "protobox.admin_cli:run"
+protobox-server = "protobox.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.0.0",
+    "pytest-mock>=3.11.0",  # For mocking in tests
+    "mongomock-motor>=0.0.21",  # MongoDB mocking for tests
+    "httpx>=0.24.0",  # For testing FastAPI endpoints
+]
+redis = ["redis>=4.5.0"]
+
+
+[tool.hatch.version]
+path = "server/src/protobox/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["server/src/protobox"]
+
+[tool.black]
+line-length = 88
+target-version = ["py311", "py312"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"] 

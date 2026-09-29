@@ -1,0 +1,448 @@
+{
+  "version": "1.0.0",
+  "category": "sendgrid",
+  "templates": [
+    {
+      "id": "sendgrid_send_email",
+      "name": "Send Email",
+      "description": "Send a single email via SendGrid",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "sendgrid",
+          "required": true,
+          "features": [
+            "mail.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to_email",
+            "type": "string",
+            "description": "Recipient email address",
+            "required": true
+          },
+          {
+            "name": "to_name",
+            "type": "string",
+            "description": "Recipient name"
+          },
+          {
+            "name": "from_email",
+            "type": "string",
+            "description": "Sender email address (must be verified)",
+            "required": true
+          },
+          {
+            "name": "from_name",
+            "type": "string",
+            "description": "Sender name"
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "description": "Email subject line",
+            "required": true
+          },
+          {
+            "name": "html_content",
+            "type": "string",
+            "description": "HTML email content"
+          },
+          {
+            "name": "text_content",
+            "type": "string",
+            "description": "Plain text email content"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:sendgrid_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "personalizations": [
+            {
+              "to": [
+                {
+                  "email": "{{to_email}}",
+                  "name": "{{to_name}}"
+                }
+              ]
+            }
+          ],
+          "from": {
+            "email": "{{from_email}}",
+            "name": "{{from_name}}"
+          },
+          "subject": "{{subject}}",
+          "content": [
+            {
+              "type": "text/html",
+              "value": "{{html_content}}"
+            },
+            {
+              "type": "text/plain",
+              "value": "{{text_content}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "sendgrid",
+          "operation": "send_email"
+        }
+      },
+      "tags": [
+        "email",
+        "communication",
+        "marketing"
+      ],
+      "examples": [
+        {
+          "name": "Send welcome email",
+          "config": {
+            "to_email": "user@example.com",
+            "to_name": "John Doe",
+            "from_email": "noreply@company.com",
+            "from_name": "Company Name",
+            "subject": "Welcome to our platform!",
+            "html_content": "<h1>Welcome!</h1><p>We're excited to have you on board.</p>",
+            "text_content": "Welcome! We're excited to have you on board."
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "sendgrid_send_template_email",
+      "name": "Send Template Email",
+      "description": "Send an email using a SendGrid template",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "sendgrid",
+          "required": true,
+          "features": [
+            "mail.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to_email",
+            "type": "string",
+            "description": "Recipient email address",
+            "required": true
+          },
+          {
+            "name": "to_name",
+            "type": "string",
+            "description": "Recipient name"
+          },
+          {
+            "name": "from_email",
+            "type": "string",
+            "description": "Sender email address",
+            "required": true
+          },
+          {
+            "name": "template_id",
+            "type": "string",
+            "description": "SendGrid template ID",
+            "required": true
+          },
+          {
+            "name": "dynamic_template_data",
+            "type": "string",
+            "description": "JSON string of template variables"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:sendgrid_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "personalizations": [
+            {
+              "to": [
+                {
+                  "email": "{{to_email}}",
+                  "name": "{{to_name}}"
+                }
+              ],
+              "dynamic_template_data": "{{dynamic_template_data}}"
+            }
+          ],
+          "from": {
+            "email": "{{from_email}}"
+          },
+          "template_id": "{{template_id}}"
+        },
+        "integration_metadata": {
+          "type": "sendgrid",
+          "operation": "send_template_email"
+        }
+      },
+      "tags": [
+        "email",
+        "template",
+        "communication"
+      ],
+      "examples": [
+        {
+          "name": "Send order confirmation template",
+          "config": {
+            "to_email": "customer@example.com",
+            "to_name": "Jane Smith",
+            "from_email": "orders@company.com",
+            "template_id": "d-1234567890abcdef",
+            "dynamic_template_data": "{\"order_number\": \"12345\", \"total\": \"$99.99\"}"
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "sendgrid_send_bulk_emails",
+      "name": "Send Bulk Emails",
+      "description": "Send emails to multiple recipients",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "sendgrid",
+          "required": true,
+          "features": [
+            "mail.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "recipients",
+            "type": "string",
+            "description": "JSON array of recipient objects with email, name, and custom data",
+            "required": true
+          },
+          {
+            "name": "from_email",
+            "type": "string",
+            "description": "Sender email address",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "description": "Email subject line",
+            "required": true
+          },
+          {
+            "name": "html_content",
+            "type": "string",
+            "description": "HTML email content"
+          },
+          {
+            "name": "text_content",
+            "type": "string",
+            "description": "Plain text email content"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.sendgrid.com/v3/mail/send",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:sendgrid_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "personalizations": "{{recipients}}",
+          "from": {
+            "email": "{{from_email}}"
+          },
+          "subject": "{{subject}}",
+          "content": [
+            {
+              "type": "text/html",
+              "value": "{{html_content}}"
+            },
+            {
+              "type": "text/plain",
+              "value": "{{text_content}}"
+            }
+          ]
+        },
+        "integration_metadata": {
+          "type": "sendgrid",
+          "operation": "send_bulk_emails"
+        }
+      },
+      "tags": [
+        "email",
+        "bulk",
+        "marketing",
+        "campaign"
+      ],
+      "examples": [
+        {
+          "name": "Send newsletter to subscribers",
+          "config": {
+            "recipients": "[{\"to\": [{\"email\": \"user1@example.com\", \"name\": \"User 1\"}], \"substitutions\": {\"name\": \"User 1\"}}, {\"to\": [{\"email\": \"user2@example.com\", \"name\": \"User 2\"}], \"substitutions\": {\"name\": \"User 2\"}}]",
+            "from_email": "newsletter@company.com",
+            "subject": "Weekly Newsletter",
+            "html_content": "<h1>Hello {{name}}!</h1><p>Here's your weekly update.</p>"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "sendgrid_get_email_analytics",
+      "name": "Get Email Analytics",
+      "description": "Retrieve email delivery and engagement metrics",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "sendgrid",
+          "required": true,
+          "features": [
+            "stats.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "start_date",
+            "type": "string",
+            "description": "Start date for analytics (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "end_date",
+            "type": "string",
+            "description": "End date for analytics (YYYY-MM-DD)",
+            "required": true
+          },
+          {
+            "name": "aggregated_by",
+            "type": "string",
+            "enum": ["day", "week", "month"],
+            "default": "day",
+            "description": "Time grouping for metrics"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.sendgrid.com/v3/stats?start_date={{start_date}}&end_date={{end_date}}&aggregated_by={{aggregated_by}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:sendgrid_api_key}"
+        },
+        "integration_metadata": {
+          "type": "sendgrid",
+          "operation": "get_email_analytics"
+        }
+      },
+      "tags": [
+        "analytics",
+        "metrics",
+        "email",
+        "reporting"
+      ],
+      "examples": [
+        {
+          "name": "Get this month's email stats",
+          "config": {
+            "start_date": "2024-03-01",
+            "end_date": "2024-03-31",
+            "aggregated_by": "day"
+          }
+        }
+      ],
+      "popularity_score": 80
+    },
+    {
+      "id": "sendgrid_create_contact",
+      "name": "Add Contact to List",
+      "description": "Add a contact to a SendGrid contact list",
+      "category": "contact_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "sendgrid",
+          "required": true,
+          "features": [
+            "marketing_campaigns.read_write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "list_ids",
+            "type": "string",
+            "description": "Comma-separated list of contact list IDs",
+            "required": true
+          },
+          {
+            "name": "contacts",
+            "type": "string",
+            "description": "JSON array of contact objects with email and custom fields",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.sendgrid.com/v3/marketing/contacts",
+        "method": "PUT",
+        "headers": {
+          "Authorization": "Bearer ${secret:sendgrid_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "list_ids": "{{list_ids}}",
+          "contacts": "{{contacts}}"
+        },
+        "integration_metadata": {
+          "type": "sendgrid",
+          "operation": "create_contact"
+        }
+      },
+      "tags": [
+        "contacts",
+        "lists",
+        "marketing"
+      ],
+      "examples": [
+        {
+          "name": "Add new subscriber",
+          "config": {
+            "list_ids": "12345,67890",
+            "contacts": "[{\"email\": \"newuser@example.com\", \"first_name\": \"John\", \"last_name\": \"Doe\"}]"
+          }
+        }
+      ],
+      "popularity_score": 75
+    }
+  ]
+}

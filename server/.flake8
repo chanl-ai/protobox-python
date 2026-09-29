@@ -1,0 +1,51 @@
+[flake8]
+# Basic configuration
+max-line-length = 100
+max-complexity = 10
+exclude = 
+    .git,
+    __pycache__,
+    .venv,
+    venv,
+    build,
+    dist,
+    migrations,
+    .pytest_cache
+
+# Error codes to ignore
+ignore = 
+    # E203: whitespace before ':' (conflicts with black)
+    E203,
+    # W503: line break before binary operator (conflicts with black)
+    W503,
+    # E501: line too long (we use max-line-length instead)
+    E501
+
+# Additional checks to enable
+select = 
+    # Default errors and warnings
+    E,W,
+    # Complexity checks
+    C90,
+    # Flake8-bugbear checks
+    B,B9,
+    # Flake8-import-order
+    I
+
+# Debug statement detection
+# These will cause linting to fail
+per-file-ignores =
+    # Allow imports in __init__.py files
+    __init__.py:F401,F403
+    # Allow debug statements in test files
+    tests/*:T001,T002,T003
+    # Allow print statements in scripts
+    scripts/*:T001
+
+# Custom error codes for debug statements
+# T001: print found
+# T002: pdb.set_trace found
+# T003: breakpoint() found
+extend-ignore =
+    # We'll use flake8-debugger plugin for this
+    T001,T002,T003

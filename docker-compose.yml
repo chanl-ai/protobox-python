@@ -1,0 +1,61 @@
+# Local stack: MongoDB (with vector search), Redis, Firebase Auth emulator,
+# document processor and the API. Values come from .env (run `make setup` first).
+services:
+  mongodb:
+    image: mongodb/mongodb-atlas-local:8.0
+    ports:
+      - "27847:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6381:6379"
+
+  firebase-emulator:
+    image: andreysenov/firebase-tools:latest
+    command: firebase emulators:start --only auth --project demo-protobox --config /config/firebase.json
+    ports:
+      - "9299:9299"
+      - "4020:4020"
+    volumes:
+      - ./firebase.json:/config/firebase.json:ro
+
+  document-processor:
+    build:
+      context: .
+      dockerfile: services/document-processor/Dockerfile
+    ports:
+      - "8092:8092"
+    environment:
+      SERVICE_PORT: 8092
+      API_KEY: ${DOCUMENT_PROCESSOR_API_KEY:?run make setup to create .env}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8092/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  api:
+    build: ./server
+    ports:
+      - "8090:8080"
+    env_file: .env
+    environment:
+      MONGODB_URL: mongodb://mongodb:27017/mcp_server?directConnection=true
+      REDIS_URL: redis://redis:6379
+      FIREBASE_AUTH_EMULATOR_HOST: firebase-emulator:9299
+      DOCUMENT_PROCESSOR_URL: http://document-processor:8092
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      document-processor:
+        condition: service_healthy
+      firebase-emulator:
+        condition: service_started

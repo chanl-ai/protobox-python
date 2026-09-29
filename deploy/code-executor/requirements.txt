@@ -1,0 +1,14 @@
+# Core dependencies for code executor
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+asyncio-timeout==4.0.3
+
+# Async support
+aiofiles==23.2.1
+
+# Security and monitoring
+psutil==5.9.6
+
+# Minimal logging
+structlog==23.2.0 

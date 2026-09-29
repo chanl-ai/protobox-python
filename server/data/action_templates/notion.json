@@ -1,0 +1,379 @@
+{
+  "version": "1.0.0",
+  "category": "notion",
+  "templates": [
+    {
+      "id": "notion_create_page",
+      "name": "Create Page",
+      "description": "Create a new page in Notion with specified properties",
+      "category": "content_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "notion",
+          "required": true,
+          "features": [
+            "pages.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "parent_id",
+            "type": "string",
+            "description": "ID of the parent page or database",
+            "required": true
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Page title",
+            "required": true
+          },
+          {
+            "name": "properties",
+            "type": "string",
+            "description": "JSON string of page properties"
+          },
+          {
+            "name": "content",
+            "type": "string",
+            "description": "JSON string of page content blocks"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.notion.com/v1/pages",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:notion_integration_token}",
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "{{parent_id}}"
+          },
+          "properties": "{{properties}}",
+          "children": "{{content}}"
+        },
+        "integration_metadata": {
+          "type": "notion",
+          "operation": "create_page"
+        }
+      },
+      "tags": [
+        "page",
+        "content",
+        "notion",
+        "creation"
+      ],
+      "examples": [
+        {
+          "name": "Create meeting notes",
+          "config": {
+            "parent_id": "12345678-1234-1234-1234-123456789012",
+            "title": "Team Meeting - March 15",
+            "properties": "{\"Title\": {\"title\": [{\"text\": {\"content\": \"Team Meeting - March 15\"}}]}}",
+            "content": "[{\"object\": \"block\", \"type\": \"paragraph\", \"paragraph\": {\"rich_text\": [{\"type\": \"text\", \"text\": {\"content\": \"Meeting notes and action items.\"}}]}}]"
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "notion_create_database",
+      "name": "Create Database",
+      "description": "Create a new database in Notion with specified properties",
+      "category": "content_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "notion",
+          "required": true,
+          "features": [
+            "databases.create"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "parent_id",
+            "type": "string",
+            "description": "ID of the parent page",
+            "required": true
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Database title",
+            "required": true
+          },
+          {
+            "name": "properties",
+            "type": "string",
+            "description": "JSON string of database properties schema"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.notion.com/v1/databases",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:notion_integration_token}",
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "parent": {
+            "type": "page_id",
+            "page_id": "{{parent_id}}"
+          },
+          "title": [
+            {
+              "type": "text",
+              "text": {
+                "content": "{{title}}"
+              }
+            }
+          ],
+          "properties": "{{properties}}"
+        },
+        "integration_metadata": {
+          "type": "notion",
+          "operation": "create_database"
+        }
+      },
+      "tags": [
+        "database",
+        "schema",
+        "notion",
+        "creation"
+      ],
+      "examples": [
+        {
+          "name": "Create project tracker",
+          "config": {
+            "parent_id": "12345678-1234-1234-1234-123456789012",
+            "title": "Project Tracker",
+            "properties": "{\"Name\": {\"title\": {}}, \"Status\": {\"select\": {\"options\": [{\"name\": \"Not Started\"}, {\"name\": \"In Progress\"}, {\"name\": \"Completed\"}]}}, \"Priority\": {\"select\": {\"options\": [{\"name\": \"Low\"}, {\"name\": \"Medium\"}, {\"name\": \"High\"}]}}}"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "notion_query_database",
+      "name": "Query Database",
+      "description": "Query a Notion database with filters and sorting",
+      "category": "content_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "notion",
+          "required": true,
+          "features": [
+            "databases.query"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "database_id",
+            "type": "string",
+            "description": "ID of the database to query",
+            "required": true
+          },
+          {
+            "name": "filter",
+            "type": "string",
+            "description": "JSON string of filter criteria"
+          },
+          {
+            "name": "sorts",
+            "type": "string",
+            "description": "JSON string of sorting criteria"
+          },
+          {
+            "name": "page_size",
+            "type": "number",
+            "description": "Number of results per page",
+            "default": 100
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.notion.com/v1/databases/{{database_id}}/query",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:notion_integration_token}",
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "filter": "{{filter}}",
+          "sorts": "{{sorts}}",
+          "page_size": "{{page_size}}"
+        },
+        "integration_metadata": {
+          "type": "notion",
+          "operation": "query_database"
+        }
+      },
+      "tags": [
+        "database",
+        "query",
+        "search",
+        "notion"
+      ],
+      "examples": [
+        {
+          "name": "Find high priority tasks",
+          "config": {
+            "database_id": "87654321-4321-4321-4321-210987654321",
+            "filter": "{\"property\": \"Priority\", \"select\": {\"equals\": \"High\"}}",
+            "sorts": "[{\"property\": \"Due Date\", \"direction\": \"ascending\"}]",
+            "page_size": 50
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "notion_update_page",
+      "name": "Update Page",
+      "description": "Update an existing Notion page with new properties or content",
+      "category": "content_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "notion",
+          "required": true,
+          "features": [
+            "pages.update"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "page_id",
+            "type": "string",
+            "description": "ID of the page to update",
+            "required": true
+          },
+          {
+            "name": "properties",
+            "type": "string",
+            "description": "JSON string of properties to update"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.notion.com/v1/pages/{{page_id}}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": "Bearer ${secret:notion_integration_token}",
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "properties": "{{properties}}"
+        },
+        "integration_metadata": {
+          "type": "notion",
+          "operation": "update_page"
+        }
+      },
+      "tags": [
+        "page",
+        "update",
+        "edit",
+        "notion"
+      ],
+      "examples": [
+        {
+          "name": "Update task status",
+          "config": {
+            "page_id": "11111111-2222-3333-4444-555555555555",
+            "properties": "{\"Status\": {\"select\": {\"name\": \"Completed\"}}}"
+          }
+        }
+      ],
+      "popularity_score": 82
+    },
+    {
+      "id": "notion_add_block",
+      "name": "Add Content Block",
+      "description": "Add a new content block to an existing Notion page",
+      "category": "content_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "notion",
+          "required": true,
+          "features": [
+            "blocks.children.append"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "block_id",
+            "type": "string",
+            "description": "ID of the parent block or page",
+            "required": true
+          },
+          {
+            "name": "children",
+            "type": "string",
+            "description": "JSON string of content blocks to add",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.notion.com/v1/blocks/{{block_id}}/children",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": "Bearer ${secret:notion_integration_token}",
+          "Notion-Version": "2022-06-28",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "children": "{{children}}"
+        },
+        "integration_metadata": {
+          "type": "notion",
+          "operation": "add_block"
+        }
+      },
+      "tags": [
+        "block",
+        "content",
+        "append",
+        "notion"
+      ],
+      "examples": [
+        {
+          "name": "Add meeting notes",
+          "config": {
+            "block_id": "11111111-2222-3333-4444-555555555555",
+            "children": "[{\"object\": \"block\", \"type\": \"paragraph\", \"paragraph\": {\"rich_text\": [{\"type\": \"text\", \"text\": {\"content\": \"Action item: Follow up with client by Friday.\"}}]}}]"
+          }
+        }
+      ],
+      "popularity_score": 78
+    }
+  ]
+}

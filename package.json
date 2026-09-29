@@ -1,0 +1,11 @@
+{
+  "name": "mcp-workspace",
+  "private": true,
+  "workspaces": [
+    "client",
+    "packages/*"
+  ],
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}

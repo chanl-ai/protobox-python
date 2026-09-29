@@ -1,0 +1,22 @@
+server:
+  name: "basic-mcp-server"
+  version: "1.0.0"
+  description: "Basic MCP server configuration"
+
+transport:
+  type: "http"
+  host: "localhost"
+  port: 8080
+
+tools:
+  - name: "echo"
+    type: "builtin.echo"
+    enabled: true
+
+logging:
+  level: "INFO"
+  format: "structured"
+
+context:
+  storage: "memory"
+  ttl: 3600 

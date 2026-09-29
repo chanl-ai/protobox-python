@@ -1,0 +1,75 @@
+server:
+  name: "mcp-server-with-admin"
+  version: "1.0.0"
+  description: "MCP Server with Admin API for action and secret management"
+
+transport:
+  type: "http"
+  host: "0.0.0.0"
+  port: 8080
+  path: "/mcp"
+
+# Admin API Configuration (NEW in Phase 2)
+admin:
+  enabled: true
+  mongodb_url: "mongodb://localhost:27017/mcp_admin"
+  secret_key: "${MCP_SECRET_KEY}"  # Set via environment variable
+  prefix: "/admin/api/v1"
+  # host: null  # Inherits from transport.host if not set
+  # port: null  # Inherits from transport.port if not set
+
+tools:
+  - name: "echo"
+    type: "builtin.echo"
+    enabled: true
+  
+  - name: "httpbin_test"
+    type: "builtin.rest_api"
+    enabled: true
+    config:
+      description: "Test REST API using httpbin.org"
+      url: "https://httpbin.org/{endpoint}"
+      method: "GET"
+      headers:
+        "User-Agent": "MCP-Server/1.0"
+      timeout: 30
+      retries: 2
+      input_schema:
+        type: "object"
+        properties:
+          endpoint:
+            type: "string"
+            description: "Endpoint to call (e.g., 'ip', 'user-agent', 'headers')"
+        required: ["endpoint"]
+  
+  - name: "weather_api"
+    type: "builtin.rest_api"
+    enabled: false  # Disabled by default, enable in production
+    config:
+      description: "Weather API integration"
+      url: "https://api.openweathermap.org/data/2.5/{endpoint}"
+      method: "GET"
+      headers:
+        "Authorization": "Bearer ${WEATHER_API_KEY}"
+      timeout: 15
+      input_schema:
+        type: "object"
+        properties:
+          endpoint:
+            type: "string"
+            description: "Weather API endpoint"
+          q:
+            type: "string"
+            description: "City name for weather data"
+        required: ["endpoint"]
+
+logging:
+  level: "INFO"
+  format: "structured"
+  # file: "/var/log/mcp-server.log"  # Uncomment for file logging
+
+context:
+  storage: "memory"
+  ttl: 3600
+  # redis_url: "redis://localhost:6379"  # For Redis-based context storage
+  # file_path: "/tmp/mcp-context.json"    # For file-based context storage 

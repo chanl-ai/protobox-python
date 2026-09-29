@@ -1,0 +1,145 @@
+---
+title: Welcome to Mocopo
+description: Model Context Protocol (MCP) server with comprehensive API documentation, SDK guides, and integration examples.
+---
+
+# Welcome to Mocopo
+
+Mocopo is a highly configurable Model Context Protocol (MCP) server implementation that provides a robust foundation for building AI-powered applications with tool execution capabilities.
+
+## 🚀 Key Features
+
+### Core MCP Server
+- **Multiple Transport Protocols**: stdio, HTTP, WebSocket
+- **Configuration-Driven**: YAML, JSON, or environment variable configuration
+- **Extensible Tool System**: Built-in tools and plugin architecture
+- **Context Management**: Persistent context across tool calls
+
+### 🔥 Admin API (Production Ready)
+- **28 Endpoints**: Complete action management system
+- **4 Action Types**: REST, CODE_RUN, O3, DATABASE executors
+- **Secret Management**: AES-256-GCM encryption
+- **MongoDB Integration**: Async operations with connection pooling
+- **Production Security**: Comprehensive encryption and validation
+
+### 🔐 Secure Code Execution
+- **Sandboxed Python Execution**: Secure, isolated code execution environment
+- **Docker Infrastructure**: Production-ready containerized execution
+- **22+ Security Measures**: Non-root execution, read-only filesystem, resource limits
+
+## Quick Start
+
+### Installation
+
+```bash
+# Install from local directory (development)
+pip install -e .
+
+# Or install from built wheel
+pip install mcp-server
+```
+
+### Basic Usage
+
+```bash
+# Run with stdio transport (default)
+mcp-server stdio
+
+# Run with HTTP transport
+mcp-server http --host 0.0.0.0 --port 8080
+
+# Run with configuration file
+mcp-server --config config.yaml http
+```
+
+### Admin API Integration
+
+```python
+from fastapi import FastAPI
+from mcp.admin.router import admin_router
+
+app = FastAPI()
+app.include_router(admin_router, prefix="/admin/api/v1")
+```
+
+## What's Next?
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+  <div className="border rounded-lg p-6">
+    <h3 className="text-lg font-semibold mb-2">🚀 Quick Start</h3>
+    <p className="text-sm text-gray-600 mb-4">Get up and running with Mocopo in minutes</p>
+    <a href="/docs/quickstart" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      Get Started →
+    </a>
+  </div>
+  
+  <div className="border rounded-lg p-6">
+    <h3 className="text-lg font-semibold mb-2">📚 API Reference</h3>
+    <p className="text-sm text-gray-600 mb-4">Explore all 28 admin endpoints with examples</p>
+    <a href="/docs/api-reference" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      View API Docs →
+    </a>
+  </div>
+  
+  <div className="border rounded-lg p-6">
+    <h3 className="text-lg font-semibold mb-2">🐍 Python SDK</h3>
+    <p className="text-sm text-gray-600 mb-4">Type-safe client with comprehensive examples</p>
+    <a href="/docs/sdk" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      SDK Documentation →
+    </a>
+  </div>
+  
+  <div className="border rounded-lg p-6">
+    <h3 className="text-lg font-semibold mb-2">🔧 Integration Guides</h3>
+    <p className="text-sm text-gray-600 mb-4">Learn how to integrate with popular platforms</p>
+    <a href="/docs/guides" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+      Integration Guides →
+    </a>
+  </div>
+</div>
+
+## Action Types
+
+Mocopo supports four types of actions for different use cases:
+
+### 1. REST Actions
+Execute HTTP requests with secret authentication
+```json
+{
+  "name": "github_api",
+  "type": "REST",
+  "default_config": {
+    "url": "https://api.github.com/repos/{owner}/{repo}",
+    "method": "GET",
+    "headers": {
+      "Authorization": "token ${GITHUB_TOKEN}"
+    }
+  }
+}
+```
+
+### 2. CODE_RUN Actions
+Execute Python code in secure sandbox
+```json
+{
+  "name": "data_processor",
+  "type": "CODE_RUN",
+  "default_config": {
+    "language": "python",
+    "code": "output = {'result': sum(input_data.get('numbers', []))}"
+  }
+}
+```
+
+### 3. O3 Actions
+OpenAI-style function calling (Coming Soon)
+
+### 4. DATABASE Actions
+Secure database queries (Coming Soon)
+
+## Community & Support
+
+- **GitHub**: [Repository](https://github.com/your-org/mocopo)
+- **Issues**: [Bug Reports & Feature Requests](https://github.com/your-org/mocopo/issues)
+- **Documentation**: This site
+- **Examples**: [Complete Examples](https://github.com/your-org/mocopo/tree/main/examples)

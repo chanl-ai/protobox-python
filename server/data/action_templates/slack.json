@@ -1,0 +1,656 @@
+{
+  "version": "1.0.0",
+  "category": "slack",
+  "templates": [
+    {
+      "id": "slack_project_update",
+      "name": "Post Project Update",
+      "description": "Share project status updates in team channels for transparency",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "slack",
+          "required": true,
+          "features": [
+            "chat:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "channel",
+            "type": "string",
+            "description": "Channel ID or name (e.g., #general, C1234567)",
+            "required": true
+          },
+          {
+            "name": "project_name",
+            "type": "string",
+            "description": "Name of the project",
+            "required": true
+          },
+          {
+            "name": "status",
+            "type": "string",
+            "enum": ["on_track", "at_risk", "delayed", "completed"],
+            "description": "Project status",
+            "required": true
+          },
+          {
+            "name": "progress_percentage",
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Progress percentage"
+          },
+          {
+            "name": "update_text",
+            "type": "string",
+            "description": "Detailed update message",
+            "required": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://slack.com/api/chat.postMessage",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:slack_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "slack",
+          "operation": "post_message"
+        },
+        "body": {
+          "channel": "{{channel}}",
+          "text": "Project Update: {{project_name}} - {{status}}",
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Project:* {{project_name}}\n*Status:* {{status}}\n*Progress:* {{progress_percentage}}%"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "{{update_text}}"
+              }
+            }
+          ]
+        }
+      },
+      "tags": ["project_management", "updates", "team_communication"],
+      "examples": [
+        {
+          "name": "Weekly Project Update",
+          "config": {
+            "channel": "#project-updates",
+            "project_name": "Website Redesign",
+            "status": "on_track",
+            "progress_percentage": 75,
+            "update_text": "Frontend development is complete. Backend integration is 75% done. On track for March 15th launch."
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "slack_marketing_campaign_announcement",
+      "name": "Marketing Campaign Announcement",
+      "description": "Announce new marketing campaigns and initiatives to the team",
+      "category": "marketing",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "slack",
+          "required": true,
+          "features": [
+            "chat:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "channel",
+            "type": "string",
+            "description": "Marketing team channel",
+            "required": true
+          },
+          {
+            "name": "campaign_name",
+            "type": "string",
+            "description": "Campaign name",
+            "required": true
+          },
+          {
+            "name": "campaign_type",
+            "type": "string",
+            "enum": ["email", "social", "content", "paid_ads", "event", "product_launch"],
+            "description": "Type of campaign",
+            "required": true
+          },
+          {
+            "name": "launch_date",
+            "type": "string",
+            "format": "date",
+            "description": "Campaign launch date",
+            "required": true
+          },
+          {
+            "name": "target_audience",
+            "type": "string",
+            "description": "Target audience description"
+          },
+          {
+            "name": "goals",
+            "type": "string",
+            "description": "Campaign goals and KPIs"
+          },
+          {
+            "name": "call_to_action",
+            "type": "string",
+            "description": "What team members should do"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://slack.com/api/chat.postMessage",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:slack_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "slack",
+          "operation": "post_message"
+        },
+        "body": {
+          "channel": "{{channel}}",
+          "text": "🚀 New Campaign: {{campaign_name}}",
+          "blocks": [
+            {
+              "type": "header",
+              "text": {
+                "type": "plain_text",
+                "text": "🚀 {{campaign_name}}"
+              }
+            },
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Type:* {{campaign_type}}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Launch:* {{launch_date}}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Audience:* {{target_audience}}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Goals:* {{goals}}"
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Action Required:* {{call_to_action}}"
+              }
+            }
+          ]
+        }
+      },
+      "tags": ["marketing", "campaigns", "announcements"],
+      "examples": [
+        {
+          "name": "Q2 Email Campaign",
+          "config": {
+            "channel": "#marketing",
+            "campaign_name": "Q2 Product Launch",
+            "campaign_type": "email",
+            "launch_date": "2024-04-01",
+            "target_audience": "Enterprise customers",
+            "goals": "Increase trial signups by 25%",
+            "call_to_action": "Review campaign assets by Friday"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "slack_task_assignment",
+      "name": "Assign Task to Team Member",
+      "description": "Notify team members about new task assignments with details",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "slack",
+          "required": true,
+          "features": [
+            "chat:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "user_id",
+            "type": "string",
+            "description": "Slack user ID of assignee",
+            "required": true
+          },
+          {
+            "name": "task_title",
+            "type": "string",
+            "description": "Task title",
+            "required": true
+          },
+          {
+            "name": "task_description",
+            "type": "string",
+            "description": "Detailed task description"
+          },
+          {
+            "name": "due_date",
+            "type": "string",
+            "format": "date",
+            "description": "Task due date",
+            "required": true
+          },
+          {
+            "name": "priority",
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "description": "Task priority",
+            "required": true
+          },
+          {
+            "name": "project_name",
+            "type": "string",
+            "description": "Related project"
+          },
+          {
+            "name": "task_url",
+            "type": "string",
+            "format": "uri",
+            "description": "Link to task in project management tool"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://slack.com/api/chat.postMessage",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:slack_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "slack",
+          "operation": "post_message"
+        },
+        "body": {
+          "channel": "{{user_id}}",
+          "text": "New task assigned: {{task_title}}",
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "📋 *New Task Assigned*\n\n*{{task_title}}*"
+              }
+            },
+            {
+              "type": "section",
+              "fields": [
+                {
+                  "type": "mrkdwn",
+                  "text": "*Priority:* {{priority}}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Due:* {{due_date}}"
+                },
+                {
+                  "type": "mrkdwn",
+                  "text": "*Project:* {{project_name}}"
+                }
+              ]
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "*Description:*\n{{task_description}}"
+              }
+            },
+            {
+              "type": "actions",
+              "elements": [
+                {
+                  "type": "button",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "View Task"
+                  },
+                  "url": "{{task_url}}"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "tags": ["tasks", "assignments", "project_management"],
+      "examples": [
+        {
+          "name": "Bug Fix Assignment",
+          "config": {
+            "user_id": "U1234567890",
+            "task_title": "Fix login authentication bug",
+            "task_description": "Users are experiencing intermittent login failures. Investigate and resolve the issue.",
+            "due_date": "2024-03-20",
+            "priority": "high",
+            "project_name": "User Portal",
+            "task_url": "https://jira.company.com/browse/PORTAL-123"
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "slack_create_project_channel",
+      "name": "Create Project Channel",
+      "description": "Create a dedicated Slack channel for a new project",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "slack",
+          "required": true,
+          "features": [
+            "channels:manage"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "channel_name",
+            "type": "string",
+            "pattern": "^[a-z0-9-_]{1,80}$",
+            "description": "Channel name (lowercase, no spaces)",
+            "required": true
+          },
+          {
+            "name": "is_private",
+            "type": "boolean",
+            "default": false,
+            "description": "Create as private channel"
+          },
+          {
+            "name": "team_members",
+            "type": "string",
+            "description": "Comma-separated list of user IDs to invite"
+          },
+          {
+            "name": "channel_topic",
+            "type": "string",
+            "description": "Channel topic/purpose"
+          },
+          {
+            "name": "channel_description",
+            "type": "string",
+            "description": "Detailed channel description"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://slack.com/api/conversations.create",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:slack_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "slack",
+          "operation": "create_channel"
+        },
+        "body": {
+          "name": "{{channel_name}}",
+          "is_private": "{{is_private}}"
+        },
+        "follow_up_actions": [
+          {
+            "action": "set_topic",
+            "url": "https://slack.com/api/conversations.setTopic",
+            "body": {
+              "channel": "${response.channel.id}",
+              "topic": "{{channel_topic}}"
+            }
+          },
+          {
+            "action": "invite_users",
+            "url": "https://slack.com/api/conversations.invite",
+            "body": {
+              "channel": "${response.channel.id}",
+              "users": "{{team_members}}"
+            }
+          }
+        ]
+      },
+      "tags": ["channels", "project_setup", "team_organization"],
+      "examples": [
+        {
+          "name": "New Product Channel",
+          "config": {
+            "channel_name": "product-launch-2024",
+            "is_private": false,
+            "team_members": "U1234567890,U0987654321",
+            "channel_topic": "Product launch planning and coordination",
+            "channel_description": "Channel for coordinating the Q2 2024 product launch campaign"
+          }
+        }
+      ],
+      "popularity_score": 82
+    },
+    {
+      "id": "slack_daily_standup_reminder",
+      "name": "Daily Standup Reminder",
+      "description": "Send daily standup reminders to project teams",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "slack",
+          "required": true,
+          "features": [
+            "chat:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "channel",
+            "type": "string",
+            "description": "Team channel for standup",
+            "required": true
+          },
+          {
+            "name": "standup_time",
+            "type": "string",
+            "pattern": "^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$",
+            "description": "Time for standup (HH:MM)",
+            "required": true
+          },
+          {
+            "name": "questions",
+            "type": "string",
+            "description": "Comma-separated list of standup questions"
+          },
+          {
+            "name": "team_members",
+            "type": "string",
+            "description": "Comma-separated list of team member mentions"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://slack.com/api/chat.postMessage",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:slack_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "slack",
+          "operation": "post_message"
+        },
+        "body": {
+          "channel": "{{channel}}",
+          "text": "🌅 Daily Standup Time!",
+          "blocks": [
+            {
+              "type": "header",
+              "text": {
+                "type": "plain_text",
+                "text": "🌅 Daily Standup - {{standup_time}}"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "Good morning team! Time for our daily standup. Please share your updates:"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "{{questions}}"
+              }
+            },
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": "{{team_members}}"
+              }
+            }
+          ]
+        }
+      },
+      "tags": ["standup", "daily_meeting", "team_sync"],
+      "examples": [
+        {
+          "name": "Morning Standup",
+          "config": {
+            "channel": "#team-standup",
+            "standup_time": "09:00",
+            "questions": "• What did you complete yesterday?\n• What will you work on today?\n• Any blockers?",
+            "team_members": "<@U1234567890> <@U0987654321> <@U1122334455>"
+          }
+        }
+      ],
+      "popularity_score": 87
+    },
+    {
+      "id": "slack_send_message",
+      "name": "Send Slack Message",
+      "description": "Send a simple message to a Slack channel or direct message",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "slack",
+          "required": true,
+          "features": [
+            "chat:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "channel",
+            "type": "string",
+            "description": "Channel ID or user ID",
+            "required": true
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "description": "Message text",
+            "required": true
+          },
+          {
+            "name": "blocks",
+            "type": "string",
+            "description": "Rich message blocks (JSON string)"
+          },
+          {
+            "name": "thread_ts",
+            "type": "string",
+            "description": "Thread timestamp for replies"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://slack.com/api/chat.postMessage",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:slack_oauth_token.access_token}",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "slack",
+          "operation": "send_message"
+        },
+        "body": {
+          "channel": "{{channel}}",
+          "text": "{{text}}",
+          "thread_ts": "{{thread_ts}}"
+        }
+      },
+      "tags": ["messaging", "notification", "team"],
+      "examples": [
+        {
+          "name": "Simple Message",
+          "config": {
+            "channel": "#general",
+            "text": "Hello team! This is a test message."
+          }
+        },
+        {
+          "name": "Rich Message with Blocks",
+          "config": {
+            "channel": "#announcements",
+            "text": "New feature announcement",
+            "blocks": "[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*New Feature Available!*\\nWe've just released the new dashboard. Check it out!\"}}]"
+          }
+        }
+      ],
+      "popularity_score": 95
+    }
+  ]
+}

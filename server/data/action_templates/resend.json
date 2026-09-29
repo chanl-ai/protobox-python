@@ -1,0 +1,380 @@
+{
+  "version": "1.0.0",
+  "category": "resend",
+  "templates": [
+    {
+      "id": "resend_send_transactional",
+      "name": "Send Transactional Email",
+      "description": "Send order confirmations, password resets, and notifications",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "resend",
+          "required": true,
+          "features": [
+            "emails.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "to",
+            "type": "string",
+            "format": "email",
+            "description": "Recipient email address",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "description": "Email subject line",
+            "required": true
+          },
+          {
+            "name": "html",
+            "type": "string",
+            "description": "HTML email content"
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "description": "Plain text fallback"
+          },
+          {
+            "name": "from",
+            "type": "string",
+            "format": "email",
+            "description": "Sender email (must be verified domain)",
+            "required": true
+          },
+          {
+            "name": "reply_to",
+            "type": "string",
+            "format": "email",
+            "description": "Reply-to address"
+          },
+          {
+            "name": "tags",
+            "type": "string",
+            "description": "JSON string of email tags for analytics"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.resend.com/emails",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:resend_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "to": "{{to}}",
+          "from": "{{from}}",
+          "subject": "{{subject}}",
+          "html": "{{html}}",
+          "text": "{{text}}",
+          "reply_to": "{{reply_to}}",
+          "tags": "{{tags}}"
+        },
+        "integration_metadata": {
+          "type": "resend",
+          "operation": "send_transactional"
+        }
+      },
+      "tags": [
+        "email",
+        "transactional",
+        "notifications"
+      ],
+      "examples": [
+        {
+          "name": "Send password reset",
+          "config": {
+            "to": "user@example.com",
+            "from": "noreply@company.com",
+            "subject": "Reset Your Password",
+            "html": "<h1>Password Reset</h1><p>Click <a href='{{reset_link}}'>here</a> to reset your password.</p>",
+            "text": "Password Reset: Click {{reset_link}} to reset your password.",
+            "tags": "[\"password_reset\", \"security\"]"
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "resend_send_marketing_batch",
+      "name": "Send Marketing Campaign",
+      "description": "Send bulk marketing emails to multiple recipients",
+      "category": "marketing",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "resend",
+          "required": true,
+          "features": [
+            "emails.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "recipients",
+            "type": "string",
+            "description": "JSON string of recipient objects with email and name",
+            "required": true
+          },
+          {
+            "name": "subject",
+            "type": "string",
+            "description": "Campaign subject",
+            "required": true
+          },
+          {
+            "name": "html_template",
+            "type": "string",
+            "description": "HTML template with {{variables}}",
+            "required": true
+          },
+          {
+            "name": "from",
+            "type": "string",
+            "format": "email",
+            "description": "Sender email",
+            "required": true
+          },
+          {
+            "name": "campaign_name",
+            "type": "string",
+            "description": "Campaign identifier"
+          },
+          {
+            "name": "schedule_for",
+            "type": "string",
+            "format": "date-time",
+            "description": "Schedule send time"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.resend.com/emails/batch",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:resend_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "emails": "{{#recipients}}{ \"to\": \"{{email}}\", \"from\": \"{{../from}}\", \"subject\": \"{{../subject}}\", \"html\": \"{{../html_template}}\" }{{/recipients}}"
+        },
+        "integration_metadata": {
+          "type": "resend",
+          "operation": "send_marketing_batch"
+        }
+      },
+      "tags": [
+        "email",
+        "marketing",
+        "campaigns",
+        "bulk"
+      ],
+      "examples": [
+        {
+          "name": "Send newsletter campaign",
+          "config": {
+            "recipients": "[{\"email\": \"user1@example.com\", \"name\": \"User 1\"}, {\"email\": \"user2@example.com\", \"name\": \"User 2\"}]",
+            "subject": "Weekly Newsletter",
+            "html_template": "<h1>Hello {{name}}!</h1><p>Here's your weekly update.</p>",
+            "from": "newsletter@company.com",
+            "campaign_name": "Weekly Newsletter March 15"
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "resend_welcome_series",
+      "name": "Welcome Email Series",
+      "description": "Send automated welcome emails to new users",
+      "category": "automation",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "resend",
+          "required": true,
+          "features": [
+            "emails.send"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "user_email",
+            "type": "string",
+            "format": "email",
+            "description": "User email address",
+            "required": true
+          },
+          {
+            "name": "user_name",
+            "type": "string",
+            "description": "User's name",
+            "required": true
+          },
+          {
+            "name": "series_step",
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Which email in series (1-5)",
+            "required": true
+          },
+          {
+            "name": "product_name",
+            "type": "string",
+            "description": "Product or service name"
+          },
+          {
+            "name": "activation_link",
+            "type": "string",
+            "format": "uri",
+            "description": "Link to activate account"
+          },
+          {
+            "name": "from_email",
+            "type": "string",
+            "format": "email",
+            "description": "Sender email address"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.resend.com/emails",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:resend_api_key}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "to": "{{user_email}}",
+          "from": "{{from_email}}",
+          "subject": "Welcome to {{product_name}} - Part {{series_step}}",
+          "html": "<h1>Welcome {{user_name}}!</h1><p>This is email {{series_step}} of your onboarding series.</p><a href='{{activation_link}}'>Get Started</a>",
+          "tags": "[\"welcome\", \"onboarding\", \"step-{{series_step}}\"]"
+        },
+        "integration_metadata": {
+          "type": "resend",
+          "operation": "welcome_series"
+        }
+      },
+      "tags": [
+        "email",
+        "onboarding",
+        "automation",
+        "drip"
+      ],
+      "examples": [
+        {
+          "name": "Send welcome email step 1",
+          "config": {
+            "user_email": "newuser@example.com",
+            "user_name": "John Doe",
+            "series_step": 1,
+            "product_name": "Our Platform",
+            "activation_link": "https://example.com/activate",
+            "from_email": "welcome@company.com"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "resend_track_email_metrics",
+      "name": "Get Email Analytics",
+      "description": "Track email performance metrics and engagement",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "resend",
+          "required": true,
+          "features": [
+            "emails.read"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "email_id",
+            "type": "string",
+            "description": "Specific email ID to track"
+          },
+          {
+            "name": "date_from",
+            "type": "string",
+            "format": "date",
+            "description": "Start date for analytics"
+          },
+          {
+            "name": "date_to",
+            "type": "string",
+            "format": "date",
+            "description": "End date for analytics"
+          },
+          {
+            "name": "tags",
+            "type": "string",
+            "description": "JSON string of tags to filter by"
+          },
+          {
+            "name": "domain",
+            "type": "string",
+            "description": "Filter by sending domain"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.resend.com/emails",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:resend_api_key}"
+        },
+        "params": {
+          "from": "{{date_from}}",
+          "to": "{{date_to}}",
+          "tags": "{{tags}}",
+          "domain": "{{domain}}"
+        },
+        "integration_metadata": {
+          "type": "resend",
+          "operation": "track_email_metrics"
+        }
+      },
+      "tags": [
+        "analytics",
+        "metrics",
+        "tracking",
+        "email"
+      ],
+      "examples": [
+        {
+          "name": "Get this month's email stats",
+          "config": {
+            "date_from": "2024-03-01",
+            "date_to": "2024-03-31",
+            "tags": "[\"newsletter\", \"marketing\"]",
+            "domain": "company.com"
+          }
+        }
+      ],
+      "popularity_score": 80
+    }
+  ]
+}

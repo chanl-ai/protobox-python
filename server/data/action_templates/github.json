@@ -1,0 +1,678 @@
+{
+  "version": "1.0.0",
+  "category": "github",
+  "templates": [
+    {
+      "id": "github_create_issue",
+      "name": "Create Issue",
+      "description": "Create a new issue for bug tracking or feature requests",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "github",
+          "required": true,
+          "features": [
+            "issues:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "repository",
+            "type": "string",
+            "description": "Repository (owner/repo format)",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Issue title",
+            "required": true
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "description": "Issue description (markdown supported)",
+            "required": true
+          },
+          {
+            "name": "assignees",
+            "type": "string",
+            "description": "Comma-separated list of GitHub usernames to assign"
+          },
+          {
+            "name": "labels",
+            "type": "string",
+            "description": "Comma-separated list of labels to apply"
+          },
+          {
+            "name": "milestone",
+            "type": "number",
+            "description": "Milestone number to associate"
+          },
+          {
+            "name": "project_column",
+            "type": "string",
+            "description": "Project board column (e.g., 'To Do')"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.github.com/repos/{{repository}}/issues",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:github_oauth_token.access_token}",
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "github",
+          "operation": "create_issue"
+        },
+        "body": {
+          "title": "{{title}}",
+          "body": "{{body}}",
+          "assignees": "{{assignees}}",
+          "labels": "{{labels}}",
+          "milestone": "{{milestone}}"
+        }
+      },
+      "tags": ["issues", "bug_tracking", "feature_requests", "project_management"],
+      "examples": [
+        {
+          "name": "Bug Report",
+          "config": {
+            "repository": "company/website",
+            "title": "Login page not loading on mobile devices",
+            "body": "Users are experiencing issues with the login page on mobile devices. The page appears to hang during the loading process.",
+            "assignees": "john_doe,jane_smith",
+            "labels": "bug,mobile,high-priority"
+          }
+        }
+      ],
+      "popularity_score": 95
+    },
+    {
+      "id": "github_create_pr",
+      "name": "Create Pull Request",
+      "description": "Create a pull request for code review and merging",
+      "category": "development",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "github",
+          "required": true,
+          "features": [
+            "pull_requests:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "repository",
+            "type": "string",
+            "description": "Repository (owner/repo format)",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "PR title",
+            "required": true
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "description": "PR description with context"
+          },
+          {
+            "name": "head",
+            "type": "string",
+            "description": "Branch containing changes",
+            "required": true
+          },
+          {
+            "name": "base",
+            "type": "string",
+            "description": "Target branch",
+            "default": "main"
+          },
+          {
+            "name": "draft",
+            "type": "boolean",
+            "description": "Create as draft PR",
+            "default": false
+          },
+          {
+            "name": "reviewers",
+            "type": "string",
+            "description": "Comma-separated list of users to request reviews from"
+          },
+          {
+            "name": "team_reviewers",
+            "type": "string",
+            "description": "Comma-separated list of teams to request reviews from"
+          },
+          {
+            "name": "labels",
+            "type": "string",
+            "description": "Comma-separated list of labels to apply"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.github.com/repos/{{repository}}/pulls",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:github_oauth_token.access_token}",
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "github",
+          "operation": "create_pull_request"
+        },
+        "body": {
+          "title": "{{title}}",
+          "body": "{{body}}",
+          "head": "{{head}}",
+          "base": "{{base}}",
+          "draft": "{{draft}}"
+        },
+        "follow_up_actions": [
+          {
+            "action": "request_reviewers",
+            "url": "https://api.github.com/repos/{{repository}}/pulls/${response.number}/requested_reviewers",
+            "body": {
+              "reviewers": "{{reviewers}}",
+              "team_reviewers": "{{team_reviewers}}"
+            }
+          }
+        ]
+      },
+      "tags": ["pull_request", "code_review", "development", "collaboration"],
+      "examples": [
+        {
+          "name": "Feature Branch PR",
+          "config": {
+            "repository": "company/website",
+            "title": "Add user authentication system",
+            "body": "This PR implements a complete user authentication system with JWT tokens, password hashing, and session management.",
+            "head": "feature/user-auth",
+            "base": "main",
+            "draft": false,
+            "reviewers": "john_doe,jane_smith",
+            "labels": "feature,authentication,security"
+          }
+        }
+      ],
+      "popularity_score": 92
+    },
+    {
+      "id": "github_update_issue_status",
+      "name": "Update Issue Status",
+      "description": "Close or reopen issues, update assignees and labels",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "github",
+          "required": true,
+          "features": [
+            "issues:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "repository",
+            "type": "string",
+            "description": "Repository (owner/repo format)",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true
+          },
+          {
+            "name": "issue_number",
+            "type": "number",
+            "description": "Issue number to update",
+            "required": true
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "enum": ["open", "closed"],
+            "description": "Issue state"
+          },
+          {
+            "name": "state_reason",
+            "type": "string",
+            "enum": ["completed", "not_planned", "reopened"],
+            "description": "Reason for state change"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Updated title"
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "description": "Updated description"
+          },
+          {
+            "name": "assignees",
+            "type": "string",
+            "description": "Comma-separated list of assignees"
+          },
+          {
+            "name": "labels",
+            "type": "string",
+            "description": "Comma-separated list of labels"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.github.com/repos/{{repository}}/issues/{{issue_number}}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": "Bearer ${secret:github_oauth_token.access_token}",
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "github",
+          "operation": "update_issue"
+        },
+        "body": {
+          "state": "{{state}}",
+          "state_reason": "{{state_reason}}",
+          "title": "{{title}}",
+          "body": "{{body}}",
+          "assignees": "{{assignees}}",
+          "labels": "{{labels}}"
+        }
+      },
+      "tags": ["issues", "status_update", "project_management"],
+      "examples": [
+        {
+          "name": "Close Completed Issue",
+          "config": {
+            "repository": "company/website",
+            "issue_number": 123,
+            "state": "closed",
+            "state_reason": "completed",
+            "body": "Issue has been resolved and tested. Closing as completed."
+          }
+        }
+      ],
+      "popularity_score": 88
+    },
+    {
+      "id": "github_create_milestone",
+      "name": "Create Sprint Milestone",
+      "description": "Create milestones for sprint planning and tracking",
+      "category": "project_management",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "github",
+          "required": true,
+          "features": [
+            "repo"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "repository",
+            "type": "string",
+            "description": "Repository (owner/repo format)",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "description": "Milestone title (e.g., 'Sprint 23')",
+            "required": true
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "Sprint goals and objectives"
+          },
+          {
+            "name": "due_on",
+            "type": "string",
+            "format": "date-time",
+            "description": "Sprint end date"
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "enum": ["open", "closed"],
+            "default": "open"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.github.com/repos/{{repository}}/milestones",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:github_oauth_token.access_token}",
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "github",
+          "operation": "create_milestone"
+        },
+        "body": {
+          "title": "{{title}}",
+          "description": "{{description}}",
+          "due_on": "{{due_on}}",
+          "state": "{{state}}"
+        }
+      },
+      "tags": ["milestones", "sprint_planning", "project_management"],
+      "examples": [
+        {
+          "name": "Q2 Sprint Milestone",
+          "config": {
+            "repository": "company/website",
+            "title": "Q2 2024 Sprint 1",
+            "description": "First sprint of Q2 focusing on user authentication and dashboard improvements",
+            "due_on": "2024-04-15T23:59:59Z",
+            "state": "open"
+          }
+        }
+      ],
+      "popularity_score": 85
+    },
+    {
+      "id": "github_create_release",
+      "name": "Create Release",
+      "description": "Create a new release with notes and assets",
+      "category": "deployment",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "github",
+          "required": true,
+          "features": [
+            "repo"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "repository",
+            "type": "string",
+            "description": "Repository (owner/repo format)",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true
+          },
+          {
+            "name": "tag_name",
+            "type": "string",
+            "description": "Version tag (e.g., v1.0.0)",
+            "required": true
+          },
+          {
+            "name": "target_commitish",
+            "type": "string",
+            "description": "Branch or commit SHA",
+            "default": "main"
+          },
+          {
+            "name": "name",
+            "type": "string",
+            "description": "Release name",
+            "required": true
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "description": "Release notes (markdown)"
+          },
+          {
+            "name": "draft",
+            "type": "boolean",
+            "description": "Create as draft",
+            "default": false
+          },
+          {
+            "name": "prerelease",
+            "type": "boolean",
+            "description": "Mark as pre-release",
+            "default": false
+          },
+          {
+            "name": "generate_release_notes",
+            "type": "boolean",
+            "description": "Auto-generate release notes",
+            "default": true
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.github.com/repos/{{repository}}/releases",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:github_oauth_token.access_token}",
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "github",
+          "operation": "create_release"
+        },
+        "body": {
+          "tag_name": "{{tag_name}}",
+          "target_commitish": "{{target_commitish}}",
+          "name": "{{name}}",
+          "body": "{{body}}",
+          "draft": "{{draft}}",
+          "prerelease": "{{prerelease}}",
+          "generate_release_notes": "{{generate_release_notes}}"
+        }
+      },
+      "tags": ["releases", "deployment", "versioning"],
+      "examples": [
+        {
+          "name": "Production Release",
+          "config": {
+            "repository": "company/website",
+            "tag_name": "v2.1.0",
+            "target_commitish": "main",
+            "name": "Version 2.1.0 - User Authentication",
+            "body": "This release introduces a complete user authentication system with enhanced security features.",
+            "draft": false,
+            "prerelease": false,
+            "generate_release_notes": true
+          }
+        }
+      ],
+      "popularity_score": 90
+    },
+    {
+      "id": "github_add_comment",
+      "name": "Add Issue/PR Comment",
+      "description": "Add comments to issues or pull requests for collaboration",
+      "category": "communication",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "github",
+          "required": true,
+          "features": [
+            "issues:write"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "repository",
+            "type": "string",
+            "description": "Repository (owner/repo format)",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true
+          },
+          {
+            "name": "issue_number",
+            "type": "number",
+            "description": "Issue or PR number",
+            "required": true
+          },
+          {
+            "name": "body",
+            "type": "string",
+            "description": "Comment text (markdown supported)",
+            "required": true
+          },
+          {
+            "name": "mentions",
+            "type": "string",
+            "description": "Comma-separated list of users to @mention in comment"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.github.com/repos/{{repository}}/issues/{{issue_number}}/comments",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer ${secret:github_oauth_token.access_token}",
+          "Accept": "application/vnd.github.v3+json",
+          "Content-Type": "application/json"
+        },
+        "integration_metadata": {
+          "type": "github",
+          "operation": "add_comment"
+        },
+        "body": {
+          "body": "{{mentions}}{{body}}"
+        }
+      },
+      "tags": ["comments", "collaboration", "communication"],
+      "examples": [
+        {
+          "name": "Code Review Comment",
+          "config": {
+            "repository": "company/website",
+            "issue_number": 456,
+            "body": "Great work on the authentication system! Just a few minor suggestions for the error handling.",
+            "mentions": "@john_doe "
+          }
+        }
+      ],
+      "popularity_score": 87
+    },
+    {
+      "id": "github_project_metrics",
+      "name": "Get Project Metrics",
+      "description": "Retrieve project metrics for sprint retrospectives",
+      "category": "analytics",
+      "status": "active",
+      "integrations": [
+        {
+          "integration_type": "github",
+          "required": true,
+          "features": [
+            "repo"
+          ]
+        }
+      ],
+      "action_type": "REST",
+      "config_schema": {
+        "inputVariables": [
+          {
+            "name": "repository",
+            "type": "string",
+            "description": "Repository (owner/repo format)",
+            "pattern": "^[^/]+/[^/]+$",
+            "required": true
+          },
+          {
+            "name": "milestone",
+            "type": "number",
+            "description": "Milestone number for sprint metrics"
+          },
+          {
+            "name": "since",
+            "type": "string",
+            "format": "date-time",
+            "description": "Start date for metrics"
+          },
+          {
+            "name": "until",
+            "type": "string",
+            "format": "date-time",
+            "description": "End date for metrics"
+          },
+          {
+            "name": "state",
+            "type": "string",
+            "enum": ["open", "closed", "all"],
+            "default": "all"
+          }
+        ]
+      },
+      "default_config": {
+        "url": "https://api.github.com/repos/{{repository}}/issues",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer ${secret:github_oauth_token.access_token}",
+          "Accept": "application/vnd.github.v3+json"
+        },
+        "integration_metadata": {
+          "type": "github",
+          "operation": "get_metrics"
+        },
+        "params": {
+          "milestone": "{{milestone}}",
+          "since": "{{since}}",
+          "until": "{{until}}",
+          "state": "{{state}}",
+          "per_page": 100
+        },
+        "post_processing": {
+          "metrics": {
+            "total_issues": "${response.length}",
+            "closed_issues": "${response.filter(i => i.state === 'closed').length}",
+            "open_issues": "${response.filter(i => i.state === 'open').length}",
+            "completion_rate": "${(closed_issues / total_issues * 100).toFixed(2)}%"
+          }
+        }
+      },
+      "tags": ["analytics", "metrics", "retrospective", "project_management"],
+      "examples": [
+        {
+          "name": "Sprint Metrics",
+          "config": {
+            "repository": "company/website",
+            "milestone": 15,
+            "since": "2024-03-01T00:00:00Z",
+            "until": "2024-03-15T23:59:59Z",
+            "state": "all"
+          }
+        }
+      ],
+      "popularity_score": 82
+    }
+  ]
+}

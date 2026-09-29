@@ -1,0 +1,23 @@
+{
+  "name": "@protobox/admin-api-client",
+  "version": "1.0.0",
+  "description": "TypeScript client for ProtoBox Admin API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "generate": "node scripts/generate.js",
+    "build": "tsc",
+    "clean": "rm -rf dist src/generated",
+    "regenerate": "npm run clean && npm run generate && npm run build"
+  },
+  "keywords": ["protobox", "admin-api", "typescript", "client"],
+  "author": "ProtoBox",
+  "license": "MIT",
+  "devDependencies": {
+    "@hey-api/openapi-ts": "^0.86.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}
