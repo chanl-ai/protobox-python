@@ -725,7 +725,11 @@ export const useAuthStore = create<AuthState>()(
         
         // Re-select current workspace if it still exists
         const { currentWorkspace, workspaces } = get()
-        if (currentWorkspace && workspaces.length > 0) {
+        // A user whose first workspace was created during onboarding has no current
+        // workspace yet, so the dashboard guard would show "unable to select one".
+        if (!currentWorkspace && workspaces.length > 0) {
+          set({ currentWorkspace: workspaces[0] })
+        } else if (currentWorkspace && workspaces.length > 0) {
           const updatedWorkspace = workspaces.find(ws => ws._id === currentWorkspace._id)
           if (updatedWorkspace) {
             // Update the current workspace with fresh data

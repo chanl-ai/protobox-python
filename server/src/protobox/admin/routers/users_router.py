@@ -10,7 +10,7 @@ Provides endpoints for:
 from datetime import datetime
 
 from bson import ObjectId
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field
 
 from ..auth.dependencies import require_authentication
@@ -175,7 +175,7 @@ async def update_user_preferences(
 
 @router.patch("/last-workspace", response_model=dict[str, str])
 async def update_last_workspace(
-    workspace_id: str, current_user: AuthUser = Depends(require_authentication), db=Depends(get_db)
+    workspace_id: str = Body(..., embed=True), current_user: AuthUser = Depends(require_authentication), db=Depends(get_db)
 ):
     """Update the user's last workspace."""
     users_collection = db.users
@@ -183,7 +183,10 @@ async def update_last_workspace(
     # Verify workspace exists and user has access
     workspaces_collection = db.workspaces
     workspace = await workspaces_collection.find_one(
-        {"_id": ObjectId(workspace_id), "members.user_id": current_user.id}
+        {
+            "_id": ObjectId(workspace_id),
+            "$or": [{"owner_id": current_user.id}, {"members.user_id": current_user.id}],
+        }
     )
 
     if not workspace:
