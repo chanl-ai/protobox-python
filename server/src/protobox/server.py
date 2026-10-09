@@ -41,7 +41,7 @@ class MCPServer:
 
     def __init__(
         self,
-        name: str = "voiceman-mcp-server",
+        name: str = "protobox-mcp-server",
         version: str = "1.0.0",
         transport: Transport | None = None,
         config: Config | None = None,

@@ -387,7 +387,7 @@ DEFAULT_HTTP_WITH_ADMIN_CONFIG = Config(
 
 # New remote MCP server configuration for Phase 1X
 DEFAULT_REMOTE_MCP_CONFIG = Config(
-    server=ServerConfig(name="voiceman-remote-mcp-server"),
+    server=ServerConfig(name="protobox-remote-mcp-server"),
     transport=TransportConfig(type="http", host="0.0.0.0", port=8080),
     tools=[
         # ChatGPT-compatible tools for Deep Research

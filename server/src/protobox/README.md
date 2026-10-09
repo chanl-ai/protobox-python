@@ -1,4 +1,4 @@
-# VoiceMan MCP Server
+# Protobox MCP Server
 
 A sophisticated Model Context Protocol (MCP) server implementation for action execution, context management, and resource sharing across multiple chat-based solutions.
 
@@ -235,7 +235,7 @@ class MCPLangchainTool(StructuredTool):
 ```yaml
 # mcp_server.yaml
 server:
-  name: "voiceman-action-server"
+  name: "protobox-action-server"
   version: "1.0.0"
   transports:
     - type: "stdio"
@@ -337,7 +337,7 @@ make mcp-debug
 ```bash
 # Clone repository
 git clone <repository-url>
-cd voiceman-v2
+cd protobox-python
 
 # Install dependencies
 make mcp-install

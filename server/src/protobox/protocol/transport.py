@@ -285,7 +285,7 @@ class HTTPTransport(Transport):
             """MCP server capabilities endpoint"""
             return {
                 "protocolVersion": "2024-11-05",
-                "serverInfo": {"name": "voiceman-remote-mcp-server", "version": "1.0.0"},
+                "serverInfo": {"name": "protobox-remote-mcp-server", "version": "1.0.0"},
                 "capabilities": {
                     "tools": {"listChanged": True},
                     "resources": {"subscribe": True, "listChanged": True},
@@ -298,7 +298,7 @@ class HTTPTransport(Transport):
         async def root():
             """Root endpoint with server info"""
             return {
-                "name": "VoiceMan Remote MCP Server",
+                "name": "Protobox Remote MCP Server",
                 "version": "1.0.0",
                 "status": "running",
                 "endpoints": {
@@ -307,7 +307,7 @@ class HTTPTransport(Transport):
                     "health": "/health",
                     "capabilities": "/mcp/capabilities",
                 },
-                "documentation": "https://github.com/voiceman/mcp-server",
+                "documentation": "https://github.com/chanl-ai/protobox-python",
             }
 
     async def start(self):
