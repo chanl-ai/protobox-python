@@ -37,9 +37,6 @@ import {
   CheckCircle2,
   RefreshCw,
   Trash2,
-  Clock,
-  Calendar,
-  Bell,
   Mail,
   Users,
 } from "lucide-react"
@@ -48,6 +45,7 @@ import { protoboxClient } from "@/lib/api/protobox-client"
 import { useWorkspaceReady } from "@/hooks"
 import { IntegrationType } from "./integration-card"
 import { IntegrationSettings } from "./integration-settings"
+import { GoogleCalendarIntegrationSettings } from "./google-calendar-integration-settings"
 
 interface IntegrationSettingsDialogProps {
   integration: IntegrationType | null
@@ -181,241 +179,13 @@ export function IntegrationSettingsDialog({
     switch (integration.id) {
       case "google_calendar":
         return (
-          <>
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Calendar Preferences
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="defaultCalendar">Primary Calendar</Label>
-                  <Select
-                    value={advancedSettings.defaultCalendar}
-                    onValueChange={(value) => setAdvancedSettings({ ...advancedSettings, defaultCalendar: value })}
-                  >
-                    <SelectTrigger id="defaultCalendar">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {integrationData?.calendars ? (
-                        integrationData.calendars.map((cal: any) => (
-                          <SelectItem key={cal.id} value={cal.id}>
-                            {cal.summary} {cal.primary && "(Primary)"}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="primary">Primary Calendar</SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="timezone">Time Zone</Label>
-                  <Select
-                    value={advancedSettings.timezone}
-                    onValueChange={(value) => setAdvancedSettings({ ...advancedSettings, timezone: value })}
-                  >
-                    <SelectTrigger id="timezone">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {integrationData?.timezones ? (
-                        integrationData.timezones.map((tz: any) => (
-                          <SelectItem key={tz.value} value={tz.value}>
-                            {tz.label}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <>
-                          <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                          <SelectItem value="America/Chicago">Central Time</SelectItem>
-                          <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                          <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                        </>
-                      )}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Availability Settings
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Working Hours</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      type="time"
-                      value={advancedSettings.workingHoursStart}
-                      onChange={(e) => setAdvancedSettings({ ...advancedSettings, workingHoursStart: e.target.value })}
-                      className="flex-1"
-                    />
-                    <span className="text-sm text-muted-foreground">to</span>
-                    <Input
-                      type="time"
-                      value={advancedSettings.workingHoursEnd}
-                      onChange={(e) => setAdvancedSettings({ ...advancedSettings, workingHoursEnd: e.target.value })}
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bufferTime">Buffer Between Meetings</Label>
-                  <Select
-                    value={advancedSettings.bufferTime}
-                    onValueChange={(value) => setAdvancedSettings({ ...advancedSettings, bufferTime: value })}
-                  >
-                    <SelectTrigger id="bufferTime">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="0">No buffer</SelectItem>
-                      <SelectItem value="5">5 minutes</SelectItem>
-                      <SelectItem value="10">10 minutes</SelectItem>
-                      <SelectItem value="15">15 minutes</SelectItem>
-                      <SelectItem value="30">30 minutes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="defaultDuration">Default Meeting Duration</Label>
-                  <Select
-                    value={advancedSettings.defaultDuration}
-                    onValueChange={(value) => setAdvancedSettings({ ...advancedSettings, defaultDuration: value })}
-                  >
-                    <SelectTrigger id="defaultDuration">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="15">15 minutes</SelectItem>
-                      <SelectItem value="30">30 minutes</SelectItem>
-                      <SelectItem value="45">45 minutes</SelectItem>
-                      <SelectItem value="60">1 hour</SelectItem>
-                      <SelectItem value="90">1.5 hours</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="autoDecline">Auto-decline conflicts</Label>
-                    <Switch
-                      id="autoDecline"
-                      checked={advancedSettings.autoDeclineConflicts}
-                      onCheckedChange={(checked) => setAdvancedSettings({ ...advancedSettings, autoDeclineConflicts: checked })}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="weekends">Available on weekends</Label>
-                    <Switch
-                      id="weekends"
-                      checked={advancedSettings.weekendsAvailable}
-                      onCheckedChange={(checked) => setAdvancedSettings({ ...advancedSettings, weekendsAvailable: checked })}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium flex items-center gap-2">
-                <Bell className="h-4 w-4" />
-                Meeting Defaults
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="defaultLocation">Default Location</Label>
-                  <Input
-                    id="defaultLocation"
-                    placeholder="e.g., Zoom, Conference Room A"
-                    value={advancedSettings.defaultLocation}
-                    onChange={(e) => setAdvancedSettings({ ...advancedSettings, defaultLocation: e.target.value })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="defaultVisibility">Default Visibility</Label>
-                  <Select
-                    value={advancedSettings.defaultVisibility}
-                    onValueChange={(value) => setAdvancedSettings({ ...advancedSettings, defaultVisibility: value })}
-                  >
-                    <SelectTrigger id="defaultVisibility">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="default">Default</SelectItem>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Default Reminder</Label>
-                  <div className="flex gap-2">
-                    <Select
-                      value={advancedSettings.defaultReminder}
-                      onValueChange={(value) => setAdvancedSettings({ ...advancedSettings, defaultReminder: value })}
-                    >
-                      <SelectTrigger className="flex-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0">No reminder</SelectItem>
-                        <SelectItem value="5">5 minutes</SelectItem>
-                        <SelectItem value="10">10 minutes</SelectItem>
-                        <SelectItem value="15">15 minutes</SelectItem>
-                        <SelectItem value="30">30 minutes</SelectItem>
-                        <SelectItem value="60">1 hour</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Select
-                      value={advancedSettings.defaultReminderMethod}
-                      onValueChange={(value) => setAdvancedSettings({ ...advancedSettings, defaultReminderMethod: value })}
-                    >
-                      <SelectTrigger className="w-[120px]">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="popup">Popup</SelectItem>
-                        <SelectItem value="email">Email</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="showDeclined">Show declined events</Label>
-                    <Switch
-                      id="showDeclined"
-                      checked={advancedSettings.showDeclinedEvents}
-                      onCheckedChange={(checked) => setAdvancedSettings({ ...advancedSettings, showDeclinedEvents: checked })}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="colorCoding">Color code by calendar</Label>
-                    <Switch
-                      id="colorCoding"
-                      checked={advancedSettings.colorCoding}
-                      onCheckedChange={(checked) => setAdvancedSettings({ ...advancedSettings, colorCoding: checked })}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </>
+          <GoogleCalendarIntegrationSettings
+            settings={advancedSettings}
+            onChange={(patch) =>
+              setAdvancedSettings((prev) => ({ ...prev, ...patch }))
+            }
+            integrationData={integrationData}
+          />
         )
 
       case "gmail":

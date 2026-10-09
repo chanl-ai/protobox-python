@@ -11,7 +11,7 @@ setup: ## Create .env files with random keys and install dependencies
 	    sed -i.bak "s|^$$k=.*|$$k=$$v|" .env; done; rm -f .env.bak; echo "Created .env"; }
 	@test -f client/.env.local || { cp client/.env.local.example client/.env.local; echo "Created client/.env.local"; }
 	cd server && uv sync
-	cd client && pnpm install --frozen-lockfile
+	pnpm install --frozen-lockfile --config.confirmModulesPurge=false
 
 up: ## Start the full stack in Docker (API on :8090)
 	docker compose up -d --build

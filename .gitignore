@@ -301,3 +301,5 @@ firebase-emulator-data/
 
 # Emulator config is needed by docker-compose
 !/firebase.json
+!/README.md
+!/SECURITY.md
