@@ -315,8 +315,8 @@ Admin API, automatically generated from the OpenAPI specification.
 """
 
 __version__ = "0.1.0"
-__author__ = "6FS Team"
-__email__ = "oss@chanl.ai"
+__author__ = "Elemente Corp"
+__email__ = ""
 
 # Re-export main client classes for convenience
 from mocops_sdk.client import Client, AuthenticatedClient

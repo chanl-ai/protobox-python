@@ -10,8 +10,8 @@ This package provides a complete MCP server implementation with support for:
 """
 
 __version__ = "1.0.0"
-__author__ = "VoiceMan Team"
-__email__ = "dev@voiceman.com"
+__author__ = "Elemente Corp"
+__email__ = ""
 
 # Core exports
 from .config.settings import Config, ServerConfig, ToolConfig, TransportConfig
